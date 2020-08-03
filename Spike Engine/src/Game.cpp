@@ -45,8 +45,6 @@ void Game::Update(float dt)
 		mainCamera->SetRotation(mainCamera->GetRotation() + speed / 2 * dt);
 	mainCamera->SetScale(mainCamera->GetScale() * (1.0f + Input::GetMouseWheel() * 0.2f));
 
-
-
 	Renderer2D::FillRotatedRect(body->GetPosition().x * Physics::PPM - 300.0f, body->GetPosition().y  * Physics::PPM - 20.0f, 600, 40, Math::ToDegrees(body->GetAngle()), Color::Green());
 	Renderer2D::FillRotatedRect(body2->GetPosition().x * Physics::PPM - 25.0f, body2->GetPosition().y * Physics::PPM - 25.0f, 50, 50, Math::ToDegrees(body2->GetAngle()), Color::Red());
 	Renderer2D::FillRotatedRect(body3->GetPosition().x * Physics::PPM - 25.0f, body3->GetPosition().y * Physics::PPM - 25.0f, 50, 50, Math::ToDegrees(body3->GetAngle()), Color::Yellow());
