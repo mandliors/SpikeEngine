@@ -11,6 +11,6 @@ Spike engine is a 2D game engine (a framework yet) which provides you with a lot
 - Great debugging and benchmarking tools
 
 ## Plans
--I plan to turn this framework into a really easy to use game engine
--Support multiple platforms (Web, Linux, Mac, Android, iOS)
--Maybe in the future I will also implement 3D rendering support
+- I plan to turn this framework into a really easy to use game engine
+- Support multiple platforms (Web, Linux, Mac, Android, iOS)
+- Maybe in the future I will also implement 3D rendering
