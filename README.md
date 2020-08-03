@@ -2,7 +2,7 @@
 
 Spike engine is a 2D game engine (a framework yet) which provides you with a lot of features.
 
-## Main features:
+### Main features:
 -A fast and easy to use 2D rendering API
 -A professional 2D physics engine (Box2D)
 -A really fast entity component system (EnTT)
