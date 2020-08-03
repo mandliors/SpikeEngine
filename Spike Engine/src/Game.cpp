@@ -25,6 +25,11 @@ void Game::Start()
 	body2 = mainScene->CreateDynamicBody(Vector2(600, 300), Vector2(50, 50));
 	body3 = mainScene->CreateDynamicBody(Vector2(580, 230), Vector2(50, 50));
 	body4 = mainScene->CreateDynamicBody(Vector2(620, 140), Vector2(50, 50));
+
+	Entity entity = mainScene->CreateEntity("Random entity");
+	entity.GetComponent<Transform>().Size = Vector2(60, 60);
+	entity.AddComponent<SpriteRenderer>().RenderColor = Color::Cyan();
+	entity.AddComponent<StaticRigidbody2D>();
 }
 
 void Game::Update(float dt)
@@ -53,5 +58,8 @@ void Game::Update(float dt)
 
 void Game::Exit()
 {
-	
+	mainScene->DeleteBody(body);
+	mainScene->DeleteBody(body2);
+	mainScene->DeleteBody(body3);
+	mainScene->DeleteBody(body4);
 }

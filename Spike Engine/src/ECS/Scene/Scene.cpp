@@ -17,6 +17,8 @@ namespace Spike {
 		for (Camera2D* cam : m_Cameras)
 			delete cam;
 		m_Cameras.clear();
+
+		delete m_World;
 	}
 	void Scene::Init()
 	{
@@ -27,7 +29,7 @@ namespace Spike {
 		SPIKE_ASSERT(m_ActiveCamera, "Camera was NULL");
 
 		//Physics update
-		m_World.Step(m_TimeStep, 6, 2);
+		m_World->Step(m_TimeStep, 6, 2);
 
 		//Rendering
 		auto sprites = m_Registry.group<SpriteRenderer>(entt::get<Transform>);
@@ -64,11 +66,11 @@ namespace Spike {
 	{
 		b2BodyDef bodyDef;
 		bodyDef.position.Set(position.X / Physics::PPM, position.Y / Physics::PPM);
-		b2Body* body = m_World.CreateBody(&bodyDef);
+		b2Body* body = m_World->CreateBody(&bodyDef);
 		b2PolygonShape shape;
 		shape.SetAsBox(size.X / Physics::PPM / 2, size.Y / Physics::PPM / 2);
 		body->CreateFixture(&shape, 0.0f);
-		body->GetFixtureList()->SetSensor(true);
+		//body->GetFixtureList()->SetSensor(true);
 		return body;
 	}
 
@@ -77,7 +79,7 @@ namespace Spike {
 		b2BodyDef bodyDef;
 		bodyDef.type = b2_dynamicBody;
 		bodyDef.position.Set(position.X / Physics::PPM, position.Y / Physics::PPM);
-		b2Body* body = m_World.CreateBody(&bodyDef);
+		b2Body* body = m_World->CreateBody(&bodyDef);
 		b2PolygonShape shape;
 		shape.SetAsBox(size.X / Physics::PPM / 2, size.Y / Physics::PPM / 2);
 		b2FixtureDef fixtureDef;
@@ -85,8 +87,13 @@ namespace Spike {
 		fixtureDef.density = 1.0f;
 		fixtureDef.friction = 0.3f;
 		body->CreateFixture(&fixtureDef);
-		body->GetFixtureList()->SetSensor(true);
+		//body->GetFixtureList()->SetSensor(true);
 		return body;
+	}
+
+	void Scene::DeleteBody(b2Body* body)
+	{
+		m_World->DestroyBody(body);
 	}
 
 	Camera2D* Scene::CreateCamera(const Vector2& position, float rotation, float scale)
@@ -112,5 +119,21 @@ namespace Spike {
 	void Scene::SetTimeStep(float ts)
 	{
 		m_TimeStep = ts;
+	}
+
+	b2World* Scene::GetPhysicsWorld()
+	{
+		return m_World;
+	}
+
+	void Scene::SetGravity(const Vector2& gravity)
+	{
+		m_World->SetGravity(b2Vec2(gravity.X, gravity.Y));
+	}
+
+	Spike::Vector2 Scene::GetGravity()
+	{
+		b2Vec2 gravity = m_World->GetGravity();
+		return Vector2(gravity.x, gravity.y);
 	}
 }

@@ -10,9 +10,6 @@ namespace Spike {
 	struct Physics
 	{
 		Physics() = delete;
-
-		static void SetGravity(Scene* scene, const Vector2& gravity);
-		static Vector2 GetGravity(Scene* scene);
 		static float GetPPM();
 
 		const static float PPM;
