@@ -1,4 +1,4 @@
-# Spike_Engine
+# Spike Engine
 
 Spike engine is a 2D game engine (a framework yet) which provides you with a lot of features.
 
