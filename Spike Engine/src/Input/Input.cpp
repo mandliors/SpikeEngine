@@ -56,15 +56,15 @@ void Spike::Input::SetMouseGlobalPosition(Spike::Vector2& pos)
 }
 bool Spike::Input::GetMouseButtonDown(int i)
 {
-	return s_CurrentButtonState[i - 1] && !s_OldButtonState[i - 1];
+	return s_CurrentButtonState[i] && !s_OldButtonState[i];
 }
 bool Spike::Input::GetMouseButton(int i)
 {
-	return s_CurrentButtonState[i - 1];
+	return s_CurrentButtonState[i];
 }
 bool Spike::Input::GetMouseButtonUp(int i)
 {
-	return s_OldButtonState[i - 1] && !s_CurrentButtonState[i - 1];
+	return s_OldButtonState[i] && !s_CurrentButtonState[i];
 }
 int Spike::Input::GetMouseWheel()
 {

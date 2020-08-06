@@ -18,18 +18,15 @@ namespace Spike {
 
 		void Init();
 		void Update();
-		b2Body* CreateStaticBody(const Vector2& position, const Vector2& size);
-		b2Body* CreateDynamicBody(const Vector2& position, const Vector2& size);
 		Camera2D* CreateCamera(const Vector2& position = Vector2::Empty(), float rotation = 0.0f, float scale = 1.0f);
 		void SetActiveCamera(int index);
 		Entity& CreateEntity(const std::string& name = std::string());
 		void DestroyEntity(Entity* entity);
+		int GetEntityCount();
 		b2World* GetPhysicsWorld();
-		void SetTimeStep(float ts);
 		void SetGravity(const Vector2& gravity);
 		Vector2 GetGravity();
-
-		void DeleteBody(b2Body* body);
+		void SetTimeStep(float ts);
 
 	private:
 		entt::registry m_Registry;

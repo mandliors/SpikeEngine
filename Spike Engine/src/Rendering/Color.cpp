@@ -9,42 +9,38 @@ namespace Spike {
 	}
 	Color Color::Black()
 	{
-		Color col = Color(0, 0, 0, 0);
-		return col;
+		return Color(0, 0, 0, 0);
 	}
 	Color Color::White()
 	{
-		Color col = Color(255, 255, 255, 255);
-		return col;
+		return Color(255, 255, 255, 255);
 	}
 	Color Color::Red()
 	{
-		Color col = Color(255, 0, 0, 255);
-		return col;
+		return Color(255, 0, 0, 255);
 	}
 	Color Color::Green()
 	{
-		Color col = Color(0, 255, 0, 255);
-		return col;
+		return Color(0, 255, 0, 255);
 	}
 	Color Color::Blue()
 	{
-		Color col = Color(0, 0, 255, 255);
-		return col;
+		return Color(0, 0, 255, 255);
 	}
 	Color Color::Yellow()
 	{
-		Color col = Color(255, 255, 0, 255);
-		return col;
+		return Color(255, 255, 0, 255);
 	}
 	Color Color::Cyan()
 	{
-		Color col = Color(0, 255, 255, 255);
-		return col;
+		return Color(0, 255, 255, 255);;
 	}
 	Color Color::Magenta()
 	{
-		Color col = Color(255, 0, 255, 255);
-		return col;
+		return Color(255, 0, 255, 255);
+	}
+	Color Color::Random(bool alpha)
+	{
+		return Color(rand() % 256, rand() % 256, rand() % 256, alpha ? rand() % 256 : 255);
 	}
 }

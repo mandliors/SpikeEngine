@@ -54,15 +54,20 @@ namespace Spike {
 			auto [transform, spriteRenderer] = sprites.get<Transform, SpriteRenderer>(sprite);
 			if (transform.Active)
 			{
-				if (spriteRenderer.Path.empty())
-					Renderer2D::FillRotatedRect(transform.Position.X - m_ActiveCamera->GetPosition().X, transform.Position.Y - m_ActiveCamera->GetPosition().Y, transform.Size.X * m_ActiveCamera->GetScale(), transform.Size.Y * m_ActiveCamera->GetScale(), transform.Rotation - m_ActiveCamera->GetRotation(), spriteRenderer.RenderColor);
-				else
+				//TODO: No hard code
+				if (transform.Position.X + transform.Size.X >= 0 && transform.Position.X <= 1280 &&
+					transform.Position.Y + transform.Size.Y >= 0 && transform.Position.Y <= 720)
 				{
-					SDL_Surface* temp = IMG_Load(spriteRenderer.Path.c_str());
-					SDL_Texture* texture = SDL_CreateTextureFromSurface(Renderer2D::GetRenderer(), temp);
-					Renderer2D::RenderRotatedTexture(texture, transform.Position - m_ActiveCamera->GetPosition(), transform.Size * m_ActiveCamera->GetScale(), transform.Rotation - m_ActiveCamera->GetRotation(), spriteRenderer.RenderColor);
-					SDL_DestroyTexture(texture);
-					SDL_FreeSurface(temp);
+					if (spriteRenderer.Path.empty())
+						Renderer2D::FillRotatedRect(transform.Position.X - m_ActiveCamera->GetPosition().X, transform.Position.Y - m_ActiveCamera->GetPosition().Y, transform.Size.X * m_ActiveCamera->GetScale(), transform.Size.Y * m_ActiveCamera->GetScale(), transform.Rotation - m_ActiveCamera->GetRotation(), spriteRenderer.RenderColor);
+					else
+					{
+						SDL_Surface* temp = IMG_Load(spriteRenderer.Path.c_str());
+						SDL_Texture* texture = SDL_CreateTextureFromSurface(Renderer2D::GetRenderer(), temp);
+						Renderer2D::RenderRotatedTexture(texture, transform.Position - m_ActiveCamera->GetPosition(), transform.Size * m_ActiveCamera->GetScale(), transform.Rotation - m_ActiveCamera->GetRotation(), spriteRenderer.RenderColor);
+						SDL_DestroyTexture(texture);
+						SDL_FreeSurface(temp);
+					}
 				}
 			}
 		}
@@ -72,40 +77,15 @@ namespace Spike {
 			auto [transform, textRenderer] = texts.get<Transform, TextRenderer>(text);
 			if (transform.Active)
 			{
-				if (!textRenderer.Text.empty())
-					Renderer2D::RenderRotatedText(textRenderer.Text, transform.Position.X, transform.Position.Y, transform.Rotation - m_ActiveCamera->GetRotation(), textRenderer.RenderColor);
+				if (transform.Position.X + transform.Size.X >= 0 && transform.Position.X <= 1280 &&
+					transform.Position.Y + transform.Size.Y >= 0 && transform.Position.Y <= 720)
+				{
+					if (!textRenderer.Text.empty())
+						Renderer2D::RenderRotatedText(textRenderer.Text, transform.Position.X, transform.Position.Y, transform.Rotation - m_ActiveCamera->GetRotation(), textRenderer.RenderColor);
+				}
 			}
 		}
 		#pragma endregion
-	}
-
-	b2Body* Scene::CreateStaticBody(const Vector2& position, const Vector2& size)
-	{
-		b2BodyDef bodyDef;
-		bodyDef.position.Set(position.X / Physics::PPM, position.Y / Physics::PPM);
-		b2Body* body = m_World->CreateBody(&bodyDef);
-		b2PolygonShape shape;
-		shape.SetAsBox(size.X / Physics::PPM / 2, size.Y / Physics::PPM / 2);
-		body->CreateFixture(&shape, 0.0f);
-		//body->GetFixtureList()->SetSensor(true);
-		return body;
-	}
-
-	b2Body* Scene::CreateDynamicBody(const Vector2& position, const Vector2& size)
-	{
-		b2BodyDef bodyDef;
-		bodyDef.type = b2_dynamicBody;
-		bodyDef.position.Set(position.X / Physics::PPM, position.Y / Physics::PPM);
-		b2Body* body = m_World->CreateBody(&bodyDef);
-		b2PolygonShape shape;
-		shape.SetAsBox(size.X / Physics::PPM / 2, size.Y / Physics::PPM / 2);
-		b2FixtureDef fixtureDef;
-		fixtureDef.shape = &shape;
-		fixtureDef.density = 1.0f;
-		fixtureDef.friction = 0.3f;
-		body->CreateFixture(&fixtureDef);
-		//body->GetFixtureList()->SetSensor(true);
-		return body;
 	}
 
 	Camera2D* Scene::CreateCamera(const Vector2& position, float rotation, float scale)
@@ -144,14 +124,14 @@ namespace Spike {
 		}
 	}
 
+	int Scene::GetEntityCount()
+	{
+		return m_Entities.size();
+	}
+
 	b2World* Scene::GetPhysicsWorld()
 	{
 		return m_World;
-	}
-
-	void Scene::SetTimeStep(float ts)
-	{
-		m_TimeStep = ts;
 	}
 
 	void Scene::SetGravity(const Vector2& gravity)
@@ -165,8 +145,8 @@ namespace Spike {
 		return Vector2(gravity.x, gravity.y);
 	}
 
-	void Scene::DeleteBody(b2Body* body)
+	void Scene::SetTimeStep(float ts)
 	{
-		m_World->DestroyBody(body);
+		m_TimeStep = ts;
 	}
 }

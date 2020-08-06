@@ -22,5 +22,6 @@ namespace Spike
 		static Color Yellow();
 		static Color Cyan();
 		static Color Magenta();
+		static Color Random(bool alpha);
 	};
 }
