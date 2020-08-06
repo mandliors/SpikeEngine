@@ -19,8 +19,13 @@ namespace Spike
 		static float Sin(float value);
 		static float Cos(float value);
 		static float Tan(float value);
+		static float Asin(float value);
+		static float Acos(float value);
+		static float Atan(float value);
+		static float Atan2(float a, float b);
 		static float Map(float value, float min, float max, float from, float to);
 		static float Clamp(float t, float x, float y);
+		static float Constrain(float t, float x, float y);
 		static float ToDegrees(float value);
 		static float ToRadians(float value);
 		static Spike::Vector2 Lerp(const Vector2& a, const Vector2& b, float t);

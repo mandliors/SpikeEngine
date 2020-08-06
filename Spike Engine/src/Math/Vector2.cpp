@@ -98,6 +98,10 @@ namespace Spike {
 		Y /= value;
 		return *this;
 	}
+	bool operator==(const Vector2& a, const Vector2& b)
+	{
+		return (a.X == b.X && a.Y == b.Y);
+	}
 	float Vector2::Magnitude()
 	{
 		return sqrt(X * X + Y * Y);

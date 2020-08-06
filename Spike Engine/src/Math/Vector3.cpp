@@ -104,6 +104,10 @@ namespace Spike {
 		Z /= value;
 		return *this;
 	}
+	bool operator==(const Vector3& a, const Vector3& b)
+	{
+		return (a.X == b.X && a.Y == b.Y && a.Z == b.Z);
+	}
 	float Vector3::Magnitude()
 	{
 		return sqrt(X * X + Y * Y + Z * Z);

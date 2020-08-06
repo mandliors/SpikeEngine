@@ -32,6 +32,7 @@ namespace Spike
 		Vector2 operator/(const float value) const;
 		Vector2& operator/=(const Vector2& other);
 		Vector2& operator/=(const float other);
+		friend bool operator==(const Vector2& a, const Vector2& b);
 		float Magnitude();
 		float SquaredMagnitude();
 		Vector2 Normalize();

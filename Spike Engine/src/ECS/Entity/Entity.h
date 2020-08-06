@@ -3,8 +3,6 @@
 #include "Core/Core.h"
 #include "ECS/EnTT/entt.hpp"
 #include "ECS/Scene/Scene.h"
-#include "ECS/Components.h"
-#include <variant>
 
 namespace Spike {
 
@@ -12,30 +10,15 @@ namespace Spike {
 	{
 	public:
 		Entity() = default;
-		Entity(entt::entity entityId, Scene* scene);
 		Entity(const Entity&) = default;
+		Entity(entt::entity entityId, Scene* scene);
 
-		template<class T, typename... Args>
+		template<typename T, typename... Args>
 		T& AddComponent(Args&&... args)
 		{
 			SPIKE_ASSERT(!HasComponent<T>(), "Entity already has component!");
-
-			if (std::is_same(T, Rigidbody2D))
-			{
-				Transform& transform = GetComponent<Transform>();
-				return AddComponent<T>(m_EntityId, this, transform.Position, transform.Size);
-			}
-
-			return m_Scene->m_Registry.emplace<T>(m_EntityId, std::forward<Args>(args)...);
+			return m_Scene->m_Registry.emplace<T>(m_EntityId, this, std::forward<Args>(args)...);
 		}
-		/*template<typename... Args>
-		Rigidbody2D& AddComponent<Rigidbody2D>(Args&&... args)
-		{
-			SPIKE_ASSERT(!HasComponent<T>(), "Entity already has component!");
-
-			Transform& transform = GetComponent<Transform>();
-			return m_Scene->m_Registry.emplace<Rigidbody2D>(m_EntityId, this, transform.Position, transform.Size, std::forward<Args>(args)...);
-		}*/
 		template<typename T>
 		T& GetComponent()
 		{
@@ -53,6 +36,11 @@ namespace Spike {
 			SPIKE_ASSERT(HasComponent<T>(), "Entity does not have component!");
 			m_Scene->m_Registry.remove<T>(m_EntityId);
 		}
+		entt::entity GetEntityID();
+		void Destroy();
+		Scene* GetScene();
+		b2Body* GetBody();
+
 	private:
 		entt::entity m_EntityId{ 0 };
 		Scene* m_Scene = nullptr;

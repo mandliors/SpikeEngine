@@ -12,11 +12,13 @@ b2Body* body2;
 b2Body* body3;
 b2Body* body4;
 
+Entity* entity;
+
 void Game::Start()
 {
 	Application::EnableConsole();
 	Application::SetMaxFPS(120);
-	
+
 	auto [scene, cam] = Application::CreateSceneAndCamera();
 	mainScene = scene;
 	mainCamera = cam;
@@ -26,11 +28,16 @@ void Game::Start()
 	body3 = mainScene->CreateDynamicBody(Vector2(580, 230), Vector2(50, 50));
 	body4 = mainScene->CreateDynamicBody(Vector2(620, 140), Vector2(50, 50));
 
-	Entity entity = mainScene->CreateEntity("Random entity");
-	entity.GetComponent<Transform>().Size = Vector2(60, 60);
-	entity.AddComponent<SpriteRenderer>().RenderColor = Color::Cyan();
-	entity.AddComponent<StaticRigidbody2D>();
+	entity = &mainScene->CreateEntity("Random entity");
+	entity->GetComponent<Transform>().Position = Vector2(600, 20);
+	entity->GetComponent<Transform>().Size = Vector2(50, 50);
+	entity->AddComponent<SpriteRenderer>("assets/checkerboard.png", Color::Cyan());
+	entity->AddComponent<Rigidbody2D>(RIGIDBODY_TYPE::DYNAMIC);
+	
+	entity->AddComponent<BoxCollider2D>();
 }
+
+int x = 10;
 
 void Game::Update(float dt)
 {
@@ -48,12 +55,16 @@ void Game::Update(float dt)
 		mainCamera->SetRotation(mainCamera->GetRotation() - speed / 2 * dt);
 	else if (Input::GetKey(SDL_SCANCODE_E))
 		mainCamera->SetRotation(mainCamera->GetRotation() + speed / 2 * dt);
+	else if (Input::GetKeyDown(SDL_SCANCODE_SPACE))
+		entity->GetComponent<Rigidbody2D>().SetVelocity(Vector2::Up() * 6);
 	mainCamera->SetScale(mainCamera->GetScale() * (1.0f + Input::GetMouseWheel() * 0.2f));
 
-	Renderer2D::FillRotatedRect(body->GetPosition().x * Physics::PPM - 300.0f, body->GetPosition().y  * Physics::PPM - 20.0f, 600, 40, Math::ToDegrees(body->GetAngle()), Color::Green());
+	Renderer2D::FillRotatedRect(body->GetPosition().x * Physics::PPM - 300.0f, body->GetPosition().y * Physics::PPM - 20.0f, 600, 40, Math::ToDegrees(body->GetAngle()), Color::Green());
 	Renderer2D::FillRotatedRect(body2->GetPosition().x * Physics::PPM - 25.0f, body2->GetPosition().y * Physics::PPM - 25.0f, 50, 50, Math::ToDegrees(body2->GetAngle()), Color::Red());
 	Renderer2D::FillRotatedRect(body3->GetPosition().x * Physics::PPM - 25.0f, body3->GetPosition().y * Physics::PPM - 25.0f, 50, 50, Math::ToDegrees(body3->GetAngle()), Color::Yellow());
 	Renderer2D::FillRotatedRect(body4->GetPosition().x * Physics::PPM - 25.0f, body4->GetPosition().y * Physics::PPM - 25.0f, 50, 50, Math::ToDegrees(body4->GetAngle()), Color::Magenta());
+
+	Renderer2D::RenderText("Kecske", x++, 10, Color::White());
 }
 
 void Game::Exit()

@@ -1,6 +1,6 @@
 #include "Scene.h"
-#include "../Components.h"
-#include "../Entity/Entity.h"
+#include "ECS/Components.h"
+#include "ECS/Entity/Entity.h"
 
 namespace Spike {
 
@@ -14,6 +14,12 @@ namespace Spike {
 				SDL_DestroyTexture(spriteRenderer.Texture);
 		}*/
 
+		//delete entities
+		for (Entity* entity : m_Entities)
+			delete entity;
+		m_Entities.clear();
+
+		//delete cameras
 		for (Camera2D* cam : m_Cameras)
 			delete cam;
 		m_Cameras.clear();
@@ -28,10 +34,20 @@ namespace Spike {
 	{
 		SPIKE_ASSERT(m_ActiveCamera, "Camera was NULL");
 
-		//Physics update
+		#pragma region Physics
 		m_World->Step(m_TimeStep, 6, 2);
 
-		//Rendering
+		auto bodies = m_Registry.group<Rigidbody2D>(entt::get<Transform>);
+		for (auto body : bodies)
+		{
+			auto [transform, rigidbody2D] = bodies.get<Transform, Rigidbody2D>(body);
+			transform.Position = Vector2(rigidbody2D.Body->GetPosition().x * Physics::PPM - transform.Size.X / 2,
+										 rigidbody2D.Body->GetPosition().y * Physics::PPM - transform.Size.Y / 2);
+			transform.Rotation = Math::ToDegrees(rigidbody2D.Body->GetAngle());
+		}
+		#pragma endregion
+
+		#pragma region Rendering
 		auto sprites = m_Registry.group<SpriteRenderer>(entt::get<Transform>);
 		for (auto sprite : sprites)
 		{
@@ -60,6 +76,7 @@ namespace Spike {
 					Renderer2D::RenderRotatedText(textRenderer.Text, transform.Position.X, transform.Position.Y, transform.Rotation - m_ActiveCamera->GetRotation(), textRenderer.RenderColor);
 			}
 		}
+		#pragma endregion
 	}
 
 	b2Body* Scene::CreateStaticBody(const Vector2& position, const Vector2& size)
@@ -91,11 +108,6 @@ namespace Spike {
 		return body;
 	}
 
-	void Scene::DeleteBody(b2Body* body)
-	{
-		m_World->DestroyBody(body);
-	}
-
 	Camera2D* Scene::CreateCamera(const Vector2& position, float rotation, float scale)
 	{
 		Camera2D* cam = new Camera2D(position, rotation, scale);
@@ -107,18 +119,29 @@ namespace Spike {
 	{
 		m_ActiveCamera = m_Cameras[index];
 	}
-	Entity Scene::CreateEntity(const std::string& name)
+	Entity& Scene::CreateEntity(const std::string& name)
 	{
-		Entity entity = Entity(m_Registry.create(), this);
-		entity.AddComponent<Transform>();
-		auto& tag = entity.AddComponent<Tag>();
+		Entity* entity = new Entity(m_Registry.create(), this);
+		m_Entities.push_back(entity);
+		entity->AddComponent<Transform>();
+		auto& tag = entity->AddComponent<Tag>();
 		tag.Name = name.empty() ? "Unnamed" : name;
-		return entity;
+		return *entity;
 	}
 
-	void Scene::SetTimeStep(float ts)
+	void Scene::DestroyEntity(Entity* entity)
 	{
-		m_TimeStep = ts;
+		for (size_t i = 0; i < m_Entities.size(); i++)
+		{
+			Entity* e = m_Entities[i];
+			if (e->GetEntityID() == entity->GetEntityID())
+			{
+				m_Registry.destroy(e->GetEntityID());
+				m_Entities.erase(m_Entities.begin() + i);
+				delete e;
+				break;
+			}
+		}
 	}
 
 	b2World* Scene::GetPhysicsWorld()
@@ -126,14 +149,24 @@ namespace Spike {
 		return m_World;
 	}
 
+	void Scene::SetTimeStep(float ts)
+	{
+		m_TimeStep = ts;
+	}
+
 	void Scene::SetGravity(const Vector2& gravity)
 	{
 		m_World->SetGravity(b2Vec2(gravity.X, gravity.Y));
 	}
 
-	Spike::Vector2 Scene::GetGravity()
+	Vector2 Scene::GetGravity()
 	{
 		b2Vec2 gravity = m_World->GetGravity();
 		return Vector2(gravity.x, gravity.y);
+	}
+
+	void Scene::DeleteBody(b2Body* body)
+	{
+		m_World->DestroyBody(body);
 	}
 }

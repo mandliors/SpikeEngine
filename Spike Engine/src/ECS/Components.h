@@ -3,114 +3,223 @@
 #include "SDL.h"
 #include "SDL_image.h"
 #include "Math/Vector2.h"
+#include "Math/Math.h"
 #include "Rendering/Renderer2D.h"
 #include "Rendering/Color.h"
 #include "Core/Core.h"
+#include "ECS/EnTT/entt.hpp"
+#include "ECS/Entity/Entity.h"
+
+#include "Debug/Debug.h"
 
 namespace Spike {
 
 	//basic
 	struct Tag
 	{
-		std::string Name;
-
 		Tag() = default;
 		Tag(const Tag&) = default;
-		Tag(std::string name)
-			: Name(name) { }
+		Tag(Entity* entity, std::string name = "Unnamed entity")
+			: OwnerEntity(entity), Name(name) { }
+
+		Entity* OwnerEntity;
+		std::string Name;
 	};
 	struct Transform
 	{
+		Transform() = default;
+		Transform(const Transform&) = default;
+		Transform(Entity* entity, const Vector2& position = Vector2::Empty(), const Vector2& size = Vector2::Empty(), int rotation = 0.0f)
+			: OwnerEntity(entity), Position(position), Size(size), Rotation(rotation) { }
+
+		Vector2 Up()
+		{
+			Vector2 temp(1, tan(Rotation));
+			return temp.Normalize();
+		}
+		void LookAt(const Vector2& point)
+		{
+			Vector2 direction = point - Position;
+			float rotation = atan2(direction.Y, direction.X) + HALF_PI;
+			if (OwnerEntity->GetBody() != nullptr)
+				OwnerEntity->GetBody()->SetTransform(b2Vec2(OwnerEntity->GetComponent<Transform>().Position.X,
+															OwnerEntity->GetComponent<Transform>().Position.Y), rotation);
+			Rotation = Math::ToDegrees(rotation);
+		}
+		void Rotate(int rotation)
+		{
+			Rotation += rotation;
+		}
+		void Translate(const Vector2& position)
+		{
+			Position = position;
+		}
+
+		Entity* OwnerEntity;
 		Vector2 Position;
 		Vector2 Size;
 		int Rotation = 0;
 		bool Active = true;
-
-		Transform() = default;
-		Transform(const Transform&) = default;
-		Transform(const Vector2& position, const Vector2& size, int rotation)
-			: Position(position), Size(size), Rotation(rotation) { }
 	};
 
 	//Rendering
 	struct SpriteRenderer
 	{
-		Color RenderColor = Color::White();
-		std::string Path;
-
 		SpriteRenderer() = default;
 		SpriteRenderer(const SpriteRenderer&) = default;
-		SpriteRenderer(const Color& color)
-			: RenderColor(color) { }
-		SpriteRenderer(const std::string& path, const Color& color = Color::White())
-			: Path(path), RenderColor(color) { }
+		SpriteRenderer(Entity* entity, const Color& color = Color::White())
+			: OwnerEntity(entity), RenderColor(color) { }
+		SpriteRenderer(Entity* entity, const std::string& path, const Color& color = Color::White())
+			: OwnerEntity(entity), Path(path), RenderColor(color) { }
+
+		Entity* OwnerEntity;
+		std::string Path;
+		Color RenderColor;
 	};
 	struct TextRenderer
 	{
-		Color RenderColor = Color::White();
-		std::string Text;
-
 		TextRenderer() = default;
 		TextRenderer(const TextRenderer&) = default;
-		TextRenderer(const std::string& text, const Color& color = Color::White())
-			: Text(text), RenderColor(color) { }
+		TextRenderer(Entity* entity, const std::string& text, const Color& color = Color::White())
+			: OwnerEntity(entity), Text(text), RenderColor(color) { }
+		
+		Entity* OwnerEntity;
+		std::string Text;
+		Color RenderColor = Color::White();
 	};
 
 	//Physics
+	enum RIGIDBODY_TYPE
+	{
+		STATIC = 0, KINEMATIC, DYNAMIC
+	};
+
 	struct Rigidbody2D
 	{
+		Rigidbody2D() = delete;
+		Rigidbody2D(const Rigidbody2D&) = default;
+		Rigidbody2D(Entity* entity, RIGIDBODY_TYPE rbType = RIGIDBODY_TYPE::STATIC)
+			: OwnerEntity(entity), RigidbodyType(rbType)
+		{
+			OwnerEntity = entity;
+			Scene* scene = entity->GetScene();
+			Transform& transform = entity->GetComponent<Transform>();
+			b2BodyDef bodyDef;
+			if (rbType == RIGIDBODY_TYPE::STATIC)
+			{
+				bodyDef.type = b2_staticBody;
+				bodyDef.position.Set((transform.Position.X + transform.Size.X / 2) / Physics::PPM, (transform.Position.Y + transform.Size.Y / 2) / Physics::PPM);
+				Body = scene->GetPhysicsWorld()->CreateBody(&bodyDef);
+				b2PolygonShape shape;
+				shape.SetAsBox(transform.Size.X / 2 / Physics::PPM, transform.Size.Y / 2 / Physics::PPM);
+				b2Fixture* fixture = Body->CreateFixture(&shape, 0.0f);
+				fixture->SetSensor(true);
+			}
+			else
+			{
+				bodyDef.type = (b2BodyType)rbType;
+				bodyDef.position.Set((transform.Position.X + transform.Size.X / 2) / Physics::PPM, (transform.Position.Y + transform.Size.Y / 2) / Physics::PPM);
+				Body = scene->GetPhysicsWorld()->CreateBody(&bodyDef);
+				b2PolygonShape shape;
+				shape.SetAsBox(transform.Size.X / 2 / Physics::PPM, transform.Size.Y / 2 / Physics::PPM);
+				b2FixtureDef fixtureDef;
+				fixtureDef.shape = &shape;
+				fixtureDef.density = 1.0f;
+				fixtureDef.friction = 0.3f;
+				b2Fixture* fixture = Body->CreateFixture(&fixtureDef);
+				fixture->SetSensor(true);
+			}
+		}
+
+		float GetMass()
+		{
+			Body->GetMass();
+		}
+		void SetMass(float mass)
+		{
+			b2MassData massData;
+			massData.mass = mass;
+			Body->SetMassData(&massData);
+		}
+		void UseGravity(bool value)
+		{
+			Body->SetGravityScale(value ? 1.0f : 0.0f);
+		}
+		void SetGravityScale(float scale)
+		{
+			Body->SetGravityScale(scale);
+		}
+		float GetGravityScale()
+		{
+			return Body->GetGravityScale();
+		}
+		Vector2 GetVelocity()
+		{
+			return Vector2(Body->GetLinearVelocity().x, Body->GetLinearVelocity().y);
+		}
+		void SetVelocity(const Vector2& velocity)
+		{
+			Body->SetLinearVelocity(b2Vec2(velocity.X, velocity.Y));
+		}
+		void AddForce(const Vector2& force)
+		{
+			b2Vec2 vel = Body->GetLinearVelocity();
+			Body->SetLinearVelocity(b2Vec2(vel.x + force.X, vel.y + force.Y));
+		}
+
+		Entity* OwnerEntity;
 		b2Body* Body = nullptr;
+		RIGIDBODY_TYPE RigidbodyType;
 	};
-	struct StaticRigidbody2D : Rigidbody2D
+	struct CircleCollider2D
 	{
-		StaticRigidbody2D() = delete;
-		StaticRigidbody2D(Scene* scene, const Vector2& position, const Vector2& size)
+		CircleCollider2D() = delete;
+		CircleCollider2D(Entity* entity, const Vector2& offset = Vector2::Empty())
+			: OwnerEntity(entity)
 		{
-			b2BodyDef bodyDef;
-			bodyDef.position.Set((position.X - size.X / 2) / Physics::PPM, (position.Y - size.Y / 2) / Physics::PPM);
-			Body = scene->GetPhysicsWorld()->CreateBody(&bodyDef);
-			b2PolygonShape shape;
-			shape.SetAsBox(size.X / 2 / Physics::PPM, size.Y / 2 / Physics::PPM);
-			b2Fixture* fixture = Body->CreateFixture(&shape, 0.0f);
-			fixture->SetSensor(true);
-		}
-	};
-	struct KinematicRigidbody2D : Rigidbody2D
-	{
-		KinematicRigidbody2D() = delete;
-		KinematicRigidbody2D(Scene* scene, const Vector2& position, const Vector2& size)
-		{
-			b2BodyDef bodyDef;
-			bodyDef.type = b2_kinematicBody;
-			bodyDef.position.Set((position.X - size.X / 2) / Physics::PPM, (position.Y - size.Y / 2) / Physics::PPM);
-			Body = scene->GetPhysicsWorld()->CreateBody(&bodyDef);
-			b2PolygonShape shape;
-			shape.SetAsBox(size.X / 2 / Physics::PPM, size.Y / 2 / Physics::PPM);
+			Transform& transform = OwnerEntity->GetComponent<Transform>();
+			b2Body* body = OwnerEntity->GetBody();
+			body->DestroyFixture(body->GetFixtureList());
+			b2CircleShape shape;
+			shape.m_p.Set(offset.X, offset.Y);
+			shape.m_radius = transform.Size.X / 2 / Physics::PPM;
 			b2FixtureDef fixtureDef;
 			fixtureDef.shape = &shape;
 			fixtureDef.density = 1.0f;
 			fixtureDef.friction = 0.3f;
-			b2Fixture* fixture = Body->CreateFixture(&fixtureDef);
-			fixture->SetSensor(true);
+			Collider = body->CreateFixture(&fixtureDef);
 		}
+
+		Entity* OwnerEntity;
+		b2Fixture* Collider;
 	};
-	struct DynamicRigidbody2D : Rigidbody2D
+	struct BoxCollider2D
 	{
-		DynamicRigidbody2D() = delete;
-		DynamicRigidbody2D(Scene* scene, const Vector2& position, const Vector2& size)
+		BoxCollider2D() = delete;
+		BoxCollider2D(Entity* entity, const Vector2& offset = Vector2::Empty())
+			: OwnerEntity(entity)
 		{
-			b2BodyDef bodyDef;
-			bodyDef.type = b2_dynamicBody;
-			bodyDef.position.Set((position.X - size.X / 2) / Physics::PPM, (position.Y - size.Y / 2) / Physics::PPM);
-			Body = scene->GetPhysicsWorld()->CreateBody(&bodyDef);
-			b2PolygonShape shape;
-			shape.SetAsBox(size.X / 2 / Physics::PPM, size.Y / 2 / Physics::PPM);
-			b2FixtureDef fixtureDef;
-			fixtureDef.shape = &shape;
-			fixtureDef.density = 1.0f;
-			fixtureDef.friction = 0.3f;
-			b2Fixture* fixture = Body->CreateFixture(&fixtureDef);
-			fixture->SetSensor(true);
+			if (offset == Vector2::Empty() && !OwnerEntity->HasComponent<CircleCollider2D>() && !OwnerEntity->HasComponent<BoxCollider2D>())
+			{
+				Collider = OwnerEntity->GetBody()->GetFixtureList();
+				Collider->SetSensor(false);
+			}
+			else
+			{
+				Transform& transform = OwnerEntity->GetComponent<Transform>();
+				b2Body* body = OwnerEntity->GetBody();
+				body->DestroyFixture(body->GetFixtureList());
+				b2PolygonShape shape;
+				shape.SetAsBox(transform.Size.X / 2 / Physics::PPM, transform.Size.Y / 2 / Physics::PPM);
+				b2FixtureDef fixtureDef;
+				fixtureDef.shape = &shape;
+				fixtureDef.density = 1.0f;
+				fixtureDef.friction = 0.3f;
+				Collider = body->CreateFixture(&fixtureDef);
+			}
 		}
+
+		Entity* OwnerEntity;
+		b2Fixture* Collider;
 	};
 }
