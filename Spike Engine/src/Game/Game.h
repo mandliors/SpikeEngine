@@ -1,5 +1,8 @@
 #pragma once
 
+//#define PhysicsTest
+#define UITest
+
 class Game
 {
 public:

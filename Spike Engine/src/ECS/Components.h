@@ -222,4 +222,44 @@ namespace Spike {
 		Entity* OwnerEntity;
 		b2Fixture* Collider;
 	};
+
+	//Scripting
+	struct ScriptableEntity
+	{
+		virtual ~ScriptableEntity() { }
+
+		template<typename T>
+		T& GetComponent()
+		{
+			return m_Entity.GetComponent<T>();
+		}
+
+	protected:
+		virtual void Setup() { }
+		virtual void Update() { }
+		virtual void Destroy() { }
+
+	private:
+		Entity m_Entity;
+		friend class Scene;
+	};
+	struct NativeScript
+	{
+		NativeScript() = delete;
+		NativeScript(Entity* entity)
+			: OwnerEntity(entity) { }
+
+		Entity* OwnerEntity;
+		ScriptableEntity* Instance = nullptr;
+
+		ScriptableEntity*(*InstantiateScript)() = nullptr;
+		void(*DestroyScript)(NativeScript*) = nullptr;
+
+		template<typename T>
+		void Bind()
+		{
+			InstantiateScript = []() { return static_cast<ScriptableEntity*>(new T()); };
+			DestroyScript = [](NativeScript* ns) { delete ns->Instance; ns->Instance = nullptr; };
+		}
+	};
 }

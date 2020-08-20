@@ -93,7 +93,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)Debug\;$(SolutionDir)Spike Engine\src\</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>SPIKE_DEBUG;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SPIKE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -108,6 +108,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)Debug\;$(SolutionDir)Spike Engine\src\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PreprocessorDefinitions>SPIKE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -154,9 +155,11 @@
   <ItemGroup>
     <ClCompile Include="src\Benchmarking\Benchmarking.cpp" />
     <ClCompile Include="src\ECS\Camera2D\Camera2D.cpp" />
-    <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\Game\PhysicsTest.cpp" />
     <ClCompile Include="src\Entry point\EntryPoint.cpp" />
+    <ClCompile Include="src\Game\UITest.cpp" />
     <ClCompile Include="src\Physics\Physics.cpp" />
+    <ClCompile Include="src\Random\Random.cpp" />
     <ClCompile Include="src\Rendering\Color.cpp" />
     <ClCompile Include="src\Events\EventDispatcher.cpp" />
     <ClCompile Include="src\Debug\Debug.cpp" />
@@ -179,6 +182,12 @@
     <ClCompile Include="src\ECS\Entity\Entity.cpp" />
     <ClCompile Include="src\ECS\Scene\Scene.cpp" />
     <ClCompile Include="src\Time\Time.cpp" />
+    <ClCompile Include="src\UI\Button\Button.cpp" />
+    <ClCompile Include="src\UI\Container\Container.cpp" />
+    <ClCompile Include="src\UI\Panel\Panel.cpp" />
+    <ClCompile Include="src\UI\SpikeUI\SpikeUI.cpp" />
+    <ClCompile Include="src\UI\Widget\IWidget.cpp" />
+    <ClCompile Include="src\UI\Widget\Widget.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Benchmarking\Benchmarking.h" />
@@ -224,6 +233,7 @@
     <ClInclude Include="src\Physics\Box2D\b2_world_callbacks.h" />
     <ClInclude Include="src\Physics\Box2D\box2d.h" />
     <ClInclude Include="src\Physics\Physics.h" />
+    <ClInclude Include="src\Random\Random.h" />
     <ClInclude Include="src\Rendering\Color.h" />
     <ClInclude Include="src\ECS\Components.h" />
     <ClInclude Include="src\ECS\Entity\Entity.h" />
@@ -251,6 +261,16 @@
     <ClInclude Include="src\Rendering\Renderer2D.h" />
     <ClInclude Include="src\Core\SpikeEngine.h" />
     <ClInclude Include="src\Time\Time.h" />
+    <ClInclude Include="src\UI\Button\Button.h" />
+    <ClInclude Include="src\UI\Constraints\Constraint.h" />
+    <ClInclude Include="src\UI\Constraints\MarginConstraint.h" />
+    <ClInclude Include="src\UI\Constraints\DefaultConstraint.h" />
+    <ClInclude Include="src\UI\Constraints\RelativeConstraint.h" />
+    <ClInclude Include="src\UI\Container\Container.h" />
+    <ClInclude Include="src\UI\Panel\Panel.h" />
+    <ClInclude Include="src\UI\SpikeUI\SpikeUI.h" />
+    <ClInclude Include="src\UI\Widget\IWidget.h" />
+    <ClInclude Include="src\UI\Widget\Widget.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\pic.png" />

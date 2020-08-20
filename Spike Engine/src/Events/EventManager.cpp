@@ -1,4 +1,5 @@
 #include "EventManager.h"
+#include "UI/SpikeUI/SpikeUI.h"
 
 namespace Spike {
 
@@ -48,6 +49,10 @@ namespace Spike {
 			case SDL_MOUSEMOTION:
 				if (event.motion.xrel != 0 || event.motion.yrel != 0)
 					Input::s_MouseMotion = true;
+				break;
+			case SDL_WINDOWEVENT:
+				if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+					SpikeUI::Recalculate();
 				break;
 			}
 			if (s_ImGuiInitialized)

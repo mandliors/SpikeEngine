@@ -8,6 +8,7 @@
 #include "Input/Input.h"
 #include "Rendering/Renderer2D.h"
 #include "Time/Time.h"
+#include "UI/SpikeUI/SpikeUI.h"
 #include "ECS/Scene/Scene.h"
 #include "ECS/Camera2D/Camera2D.h"
 #include "ImGui/imgui.h"
@@ -15,6 +16,7 @@
 #include "ImGui/imgui_impl_sdl.h"
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
+#include "Debug/Debug.h"
 #include <Windows.h>
 #include <iostream>
 #include <vector>
@@ -32,7 +34,7 @@ namespace Spike
 		~Application();
 
 		//base
-		static bool Init(std::string title, int width, int height, Uint32 flags = SDL_RENDERER_ACCELERATED);
+		static bool Init(std::string title, int width, int height, Uint32 windowFlags = SDL_WINDOW_RESIZABLE, Uint32 rendererFlags = SDL_RENDERER_ACCELERATED);
 		static bool IsRunning() { return s_Running; }
 		static void Update();
 		static void Render();
@@ -45,10 +47,10 @@ namespace Spike
 		static void SetMaxFPS(int fps);
 		static unsigned int GetMaxFPS();
 		static float GetFPS();
-		static Vector2& GetScreenSize(Uint8 idx);
-		static Vector2& GetWindowSize();
+		static Vector2 GetScreenSize(Uint8 idx);
+		static Vector2 GetWindowSize();
 		static void SetWindowSize(const Vector2& size);
-		static Vector2& GetWindowPosition();
+		static Vector2 GetWindowPosition();
 		static void SetWindowPosition(const Vector2& pos);
 		static void SafeToggleFullscreen();
 		static void SafeToggleFullscreen(bool value);
@@ -61,6 +63,7 @@ namespace Spike
 		static Scene* CreateScene();
 		static void SetActiveScene(int index);
 		static std::tuple<Scene*, Camera2D*> CreateSceneAndCamera();
+
 	private:
 		//init
 		static SDL_Window* s_Window;

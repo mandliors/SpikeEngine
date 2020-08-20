@@ -1,6 +1,8 @@
 #include "Core/SpikeEngine.h"
 #include "Game/Game.h"
 
+#define UITest
+
 int main(void)
 {
 	if (!Spike::Application::Init("Spike engine test", 1280, 720))

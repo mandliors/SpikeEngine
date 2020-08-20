@@ -11,6 +11,8 @@
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
 #include "Math/Math.h"
+#include "Random/Random.h"
+#include "UI/SpikeUI/SpikeUI.h"
 #include "ECS/Scene/Scene.h"
 #include "ECS/Entity/Entity.h"
 #include "ECS/Components.h"

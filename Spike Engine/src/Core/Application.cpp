@@ -23,15 +23,15 @@ namespace Spike {
 			delete scene;
 		m_Scenes.clear();
 	}
-	bool Application::Init(std::string title, int width, int height, Uint32 flags)
+	bool Application::Init(std::string title, int width, int height, Uint32 windowFlags, Uint32 rendererFlags)
 	{
 		bool success = true;
 		HWND console = GetConsoleWindow();
 		ShowWindow(console, SW_HIDE);
 		if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
 		{
-			s_Window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, flags);
-			if (!Renderer2D::Init(s_Window, -1, flags))
+			s_Window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, windowFlags);
+			if (!Renderer2D::Init(s_Window, -1, rendererFlags))
 				success = false;
 
 			int imgFlags = IMG_INIT_PNG;
@@ -41,6 +41,7 @@ namespace Spike {
 			EventManager::Init();
 			EventManager::SetFPS(s_MaxFPS);
 			Input::Init();
+			SpikeUI::Init();
 
 			s_StartTicks = SDL_GetTicks();
 			s_Running = true;
@@ -64,20 +65,29 @@ namespace Spike {
 		//FPS
 		s_FPS = s_Frames / ((SDL_GetTicks() - s_StartTicks) / 1000.0f);
 		if (s_FPS > 2000000) s_FPS = 0;
+		//s_FPS = 1.0f / Time::s_DeltaTime;
+
+		//SpikeGUI
+		SpikeUI::Update();
 
 		if (s_ImGuiInitialized)
 			ImGui::NewFrame();
 	}
 	void Application::Render()
 	{
+		//ImGui
 		if (s_ImGuiInitialized)
 		{
 			ImGui::Render();
 			ImGuiSDL::Render(ImGui::GetDrawData());
 		}
 
+		//Scene
 		if (m_ActiveScene)
 			m_ActiveScene->Update();
+
+		//SpikeGUI
+		SpikeUI::Render();
 
 		SDL_RenderPresent(Renderer2D::GetRenderer());
 
@@ -124,6 +134,9 @@ namespace Spike {
 	}
 	void Application::Close()
 	{
+		Input::Close();
+		SpikeUI::Close();
+		Renderer2D::Close();
 		if (s_ImGuiInitialized)
 		{
 			ImGuiSDL::Deinitialize();
@@ -139,36 +152,27 @@ namespace Spike {
 	{
 		SDL_SetWindowTitle(s_Window, title.c_str());
 	}
-	Vector2& Application::GetScreenSize(Uint8 idx)
+	Vector2 Application::GetScreenSize(Uint8 idx)
 	{
 		SDL_DisplayMode dm;
-		Vector2 screenSize;
 		SDL_GetCurrentDisplayMode(idx, &dm);
-		screenSize.X = dm.w;
-		screenSize.Y = dm.h;
-		return screenSize;
+		return Vector2(dm.w, dm.h);
 	}
-	Vector2& Application::GetWindowSize()
+	Vector2 Application::GetWindowSize()
 	{
 		int w, h;
-		Vector2 windowSize;
 		SDL_GetWindowSize(s_Window, &w, &h);
-		windowSize.X = w;
-		windowSize.Y = h;
-		return windowSize;
+		return Vector2(w, h);
 	}
 	void Application::SetWindowSize(const Vector2& size)
 	{
 		SDL_SetWindowSize(s_Window, size.X, size.Y);
 	}
-	Vector2& Application::GetWindowPosition()
+	Vector2 Application::GetWindowPosition()
 	{
-		int w, h;
-		Vector2 windowPos;
-		SDL_GetWindowPosition(s_Window, &w, &h);
-		windowPos.X = w;
-		windowPos.Y = h;
-		return windowPos;
+		int x, y;
+		SDL_GetWindowPosition(s_Window, &x, &y);
+		return Vector2(x, y);
 	}
 	void Application::SetWindowPosition(const Vector2& pos)
 	{

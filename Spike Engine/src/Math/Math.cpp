@@ -59,5 +59,10 @@ namespace Spike {
 		return a + (b - a) * t;
 	}
 
-
+	bool Math::OverlapPoint(const Vector2& point, const Vector2& position, const Vector2& size)
+	{
+		if (point.X < position.X || point.X > position.X + size.X) return false;
+		if (point.Y < position.Y || point.Y > position.Y + size.Y) return false;
+		return true;
+	}
 }

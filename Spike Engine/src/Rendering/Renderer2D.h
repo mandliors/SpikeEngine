@@ -14,8 +14,8 @@ namespace Spike
 	{
 	public:
 		Renderer2D() = delete;
-		~Renderer2D() { TTF_CloseFont(s_Font); }
 		static bool Init(SDL_Window* win, int idx, Uint32 flags);
+		static void Close() { TTF_CloseFont(s_Font); }
 		static SDL_Renderer* GetRenderer();
 		static void Clear(int r, int g, int b, int a = 255);
 		static void Clear(const Color& color);

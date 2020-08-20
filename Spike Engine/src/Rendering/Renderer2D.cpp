@@ -12,7 +12,8 @@ namespace Spike {
 		s_Renderer = SDL_CreateRenderer(win, idx, flags);
 		if (TTF_Init() == -1)
 			success = false;
-		s_Font = TTF_OpenFont("assets/FreeMono.ttf", 24);
+		s_Font = TTF_OpenFont("assets/arial.ttf", 24);
+		//s_Font = TTF_OpenFont("assets/FreeMono.ttf", 24);
 		if (!s_Font)
 			success = false;
 		return success;

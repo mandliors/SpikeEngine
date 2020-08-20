@@ -6,14 +6,17 @@ namespace Spike
 {
 	struct Color
 	{
-		float R, G, B, A;
+		int R, G, B, A;
 		Color()
 			: R(0), G(0), B(0), A(0) { }
-		Color(float r, float g, float b, float a = 255)
+		Color(int r, int g, int b, int a = 255)
 			: R(r), G(g), B(b), A(a) { }
 		Color(const Color& other) = default;
 		friend std::ostream& operator<<(std::ostream& stream, const Color& color);
 
+		Color operator *(float mult);
+		Color Multiply(float mult);
+		
 		static Color Black();
 		static Color White();
 		static Color Red();
@@ -22,6 +25,10 @@ namespace Spike
 		static Color Yellow();
 		static Color Cyan();
 		static Color Magenta();
-		static Color Random(bool alpha);
+		static Color Grey();
+		static Color Purple();
+		static Color Orange();
+		static Color Transparent();
+		static Color Random(bool alpha = true);
 	};
 }

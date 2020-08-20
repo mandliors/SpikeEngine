@@ -1,11 +1,16 @@
 #include "Game/Game.h"
 #include "Core/SpikeEngine.h"
 
+#ifdef PhysicsTest
+
 using namespace Spike;
+
+class CreationScript;
 
 Scene* mainScene;
 Camera2D* mainCamera;
 int speed = 600;
+
 
 void Game::Start()
 {
@@ -51,11 +56,12 @@ void Game::Update(float dt)
 
 	if (Input::GetMouseButton(0))
 	{
-		auto& e = mainScene->CreateEntity();
+		auto e = mainScene->CreateEntity();
 		auto& t = e.GetComponent<Transform>();
 		t.Position = Input::GetMousePosition();
 		t.Size = Vector2(20, 20);
 		e.AddComponent<Rigidbody2D>(RIGIDBODY_TYPE::DYNAMIC);
+		e.AddComponent<NativeScript>().Bind<CreationScript>();
 
 		if (rand() % 2 == 0)
 		{
@@ -67,7 +73,7 @@ void Game::Update(float dt)
 			e.AddComponent<BoxCollider2D>();
 			e.AddComponent<SpriteRenderer>(Color::Random(false));
 			/*e.AddComponent<CircleCollider2D>();
-			e.AddComponent<SpriteRenderer>("assets/circle.png", Color::Random(false));*/
+			e.AddComponent<SpriteRenderer>("assets/circle.png", Color::Random(true));*/
 		}
 	}
 
@@ -92,3 +98,14 @@ void Game::Exit()
 {
 
 }
+
+class CreationScript : public ScriptableEntity
+{
+public:
+	void Setup()
+	{
+		Debug::Log("New entity was created");
+	}
+};
+
+#endif

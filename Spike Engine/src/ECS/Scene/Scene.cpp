@@ -34,6 +34,20 @@ namespace Spike {
 	{
 		SPIKE_ASSERT(m_ActiveCamera, "Camera was NULL");
 
+		#pragma region Scripting
+		m_Registry.view<NativeScript>().each([=](auto entity, auto& ns)
+		{
+			if (ns.Instance == nullptr)
+			{
+				ns.Instance = ns.InstantiateScript();
+				ns.Instance->m_Entity = Entity(entity, this);
+				ns.Instance->Setup();
+			}
+		
+			ns.Instance->Update();
+		});
+		#pragma endregion
+
 		#pragma region Physics
 		m_World->Step(m_TimeStep, 6, 2);
 
@@ -55,16 +69,24 @@ namespace Spike {
 			if (transform.Active)
 			{
 				//TODO: No hard code
+				//TODO: Fix camera (scale, rotation)
 				if (transform.Position.X + transform.Size.X >= 0 && transform.Position.X <= 1280 &&
 					transform.Position.Y + transform.Size.Y >= 0 && transform.Position.Y <= 720)
 				{
+					SDL_Point point = { 640, 360 };
 					if (spriteRenderer.Path.empty())
-						Renderer2D::FillRotatedRect(transform.Position.X - m_ActiveCamera->GetPosition().X, transform.Position.Y - m_ActiveCamera->GetPosition().Y, transform.Size.X * m_ActiveCamera->GetScale(), transform.Size.Y * m_ActiveCamera->GetScale(), transform.Rotation - m_ActiveCamera->GetRotation(), spriteRenderer.RenderColor);
+						Renderer2D::FillRotatedRect(transform.Position.X - m_ActiveCamera->GetPosition().X,
+													transform.Position.Y - m_ActiveCamera->GetPosition().Y,
+													transform.Size.X * m_ActiveCamera->GetScale(),
+													transform.Size.Y * m_ActiveCamera->GetScale(),
+													transform.Rotation - m_ActiveCamera->GetRotation(), spriteRenderer.RenderColor);
 					else
 					{
 						SDL_Surface* temp = IMG_Load(spriteRenderer.Path.c_str());
 						SDL_Texture* texture = SDL_CreateTextureFromSurface(Renderer2D::GetRenderer(), temp);
-						Renderer2D::RenderRotatedTexture(texture, transform.Position - m_ActiveCamera->GetPosition(), transform.Size * m_ActiveCamera->GetScale(), transform.Rotation - m_ActiveCamera->GetRotation(), spriteRenderer.RenderColor);
+						Renderer2D::RenderRotatedTexture(texture, transform.Position - m_ActiveCamera->GetPosition(),
+																  transform.Size * m_ActiveCamera->GetScale(),
+																  transform.Rotation - m_ActiveCamera->GetRotation(), spriteRenderer.RenderColor);
 						SDL_DestroyTexture(texture);
 						SDL_FreeSurface(temp);
 					}

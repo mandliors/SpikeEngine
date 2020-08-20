@@ -1,15 +1,16 @@
 #include "Color.h"
+#include "Math/Math.h"
 
 namespace Spike {
 
 	std::ostream& operator<<(std::ostream& stream, const Color& color)
 	{
-		std::cout << "{" << color.R << ", " << color.G << ", " << color.B << "," << color.A << "}" << std::endl;
+		std::cout << "{" << color.R << ", " << color.G << ", " << color.B << ", " << color.A << "}" << std::endl;
 		return stream;
 	}
 	Color Color::Black()
 	{
-		return Color(0, 0, 0, 0);
+		return Color(0, 0, 0, 255);
 	}
 	Color Color::White()
 	{
@@ -39,8 +40,39 @@ namespace Spike {
 	{
 		return Color(255, 0, 255, 255);
 	}
+
+	Color Color::Grey()
+	{
+		return Color(128, 128, 128, 255);
+	}
+
+	Color Color::Purple()
+	{
+		return Color(76, 0, 153, 255);
+	}
+
+	Color Color::Orange()
+	{
+		return Color(204, 102, 0, 255);
+	}
+
+	Color Color::Transparent()
+	{
+		return Color(0, 0, 0, 0);
+	}
+
 	Color Color::Random(bool alpha)
 	{
 		return Color(rand() % 256, rand() % 256, rand() % 256, alpha ? rand() % 256 : 255);
+	}
+
+	Color Color::operator*(float mult)
+	{
+		return Color(R + (255 - R) * (mult - 1.0f), G + (255 - G) * (mult - 1.0f), B + (255 - B) * (mult - 1.0f), A);
+	}
+
+	Color Color::Multiply(float mult)
+	{
+		return *this * mult;
 	}
 }
