@@ -1,11 +1,10 @@
-#include "Core/SpikeEngine.h"
-#include "Game/Game.h"
+/*#include "Core/SpikeEngine.h"
+#include "Projects/Game.h"
 
-#define UITest
 
 int main(void)
 {
-	if (!Spike::Application::Init("Spike engine test", 1280, 720))
+	if (!Spike::Application::Init("Spike engine test", 1280, 720, SPIKE_WINDOW_RESIZABLE))
 		Spike::Debug::Error("Error while initializing the application");
 	else
 		Spike::Debug::Grat("Successfully initialized the application");
@@ -24,4 +23,4 @@ int main(void)
 	game->Exit();
 	delete game;
 	Spike::Application::Close();
-}
+}*/

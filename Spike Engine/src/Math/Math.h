@@ -45,20 +45,21 @@ namespace Spike
 			}
 			return max;
 		}
-		static float Sin(float value);
-		static float Cos(float value);
-		static float Tan(float value);
-		static float Asin(float value);
-		static float Acos(float value);
-		static float Atan(float value);
-		static float Atan2(float a, float b);
-		static float Map(float value, float min, float max, float from, float to);
-		static float Clamp(float t, float x, float y);
-		static float Constrain(float t, float x, float y);
-		static float ToDegrees(float value);
-		static float ToRadians(float value);
-		static Spike::Vector2 Lerp(const Vector2& a, const Vector2& b, float t);
-		static Spike::Vector3 Lerp(const Vector3& a, const Vector3& b, float t);
-		static bool OverlapPoint(const Vector2& point, const Vector2& position, const Vector2& size);
+		static double Abs(double value);
+		static double Sin(double value);
+		static double Cos(double value);
+		static double Tan(double value);
+		static double Asin(double value);
+		static double Acos(double value);
+		static double Atan(double value);
+		static double Atan2(double a, double b);
+		static double Log(double value);
+		static double Map(double value, double min, double max, double from, double to);
+		static double Clamp(double t, double x, double y);
+		static double Constrain(double t, double x, double y);
+		static double ToDegrees(double value);
+		static double ToRadians(double value);
+		static Spike::Vector2 Lerp(const Vector2& a, const Vector2& b, double t);
+		static Spike::Vector3 Lerp(const Vector3& a, const Vector3& b, double t);
 	};
 }

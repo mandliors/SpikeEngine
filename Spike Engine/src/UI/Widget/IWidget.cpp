@@ -18,16 +18,6 @@ namespace Spike {
 		return m_Parent;
 	}
 
-	void IWidget::SetPosition(const Vector2& position)
-	{
-		m_Position = position;
-	}
-
-	void IWidget::SetSize(const Vector2& size)
-	{
-		m_Size = size;
-	}
-
 	void IWidget::SetParent(IWidget* parent)
 	{
 		m_Parent = parent;
@@ -37,56 +27,64 @@ namespace Spike {
 	void IWidget::OnClick()
 	{
 #ifdef SPIKE_DEBUG
-		Debug::_EngineLog("OnClick");
+		if (!m_Hidden)
+			Debug::__ENGINE_LOG("OnClick");
 #endif
 	}
 
 	void IWidget::OnMouseEnter()
 	{
 #ifdef SPIKE_DEBUG
-		Debug::_EngineLog("OnMouseEnter");
+		if (!m_Hidden)
+			Debug::__ENGINE_LOG("OnMouseEnter");
 #endif
 	}
 
 	void IWidget::OnMouseHover()
 	{
 #ifdef SPIKE_DEBUG
-		Debug::_EngineLog("OnMouseHover");
+		if (!m_Hidden)
+			Debug::__ENGINE_LOG("OnMouseHover");
 #endif
 	}
 
 	void IWidget::OnMouseLeave()
 	{
 #ifdef SPIKE_DEBUG
-		Debug::_EngineLog("OnMouseLeave");
+		if (!m_Hidden)
+			Debug::__ENGINE_LOG("OnMouseLeave");
 #endif
 	}
 
 	void IWidget::OnMousePressing()
 	{
 #ifdef SPIKE_DEBUG
-		Debug::_EngineLog("OnMousePressing");
+		if (!m_Hidden)
+			Debug::__ENGINE_LOG("OnMousePressing");
 #endif
 	}
 
 	void IWidget::OnFocusEnter()
 	{
 #ifdef SPIKE_DEBUG
-		Debug::_EngineLog("OnFocusEnter");
+		if (!m_Hidden)
+			Debug::__ENGINE_LOG("OnFocusEnter");
 #endif
 	}
 
 	void IWidget::OnFocusLeave()
 	{
 #ifdef SPIKE_DEBUG
-		Debug::_EngineLog("OnFocusLeave");
+		if (!m_Hidden)
+			Debug::__ENGINE_LOG("OnFocusLeave");
 #endif
 	}
 
 	void IWidget::OnKeyDown(int key)
 	{
 #ifdef SPIKE_DEBUG
-		Debug::_EngineLog("OnKeyDown: " + (char)SDL_GetKeyFromScancode((SDL_Scancode)key));
+		if (!m_Hidden)
+			Debug::__ENGINE_LOG("OnKeyDown: " + (char)SDL_GetKeyFromScancode((SDL_Scancode)key));
 #endif
 	}
 

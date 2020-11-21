@@ -10,7 +10,6 @@ namespace Spike
 	{
 	public:
 		Input() = delete;
-		~Input();
 
 		static void Init();
 		static void Update();
@@ -33,8 +32,6 @@ namespace Spike
 		static int GetMouseWheel();
 		static bool GetMouseMotion();
 
-		static void WTF();
-
 		//keyboard
 		static const Uint8* s_CurrentKeyState;
 		static Uint8* s_OldKeyState;
@@ -44,9 +41,5 @@ namespace Spike
 		static bool GetKeyUp(int i);
 		static std::vector<int> GetKeysDown();
 		static std::vector<int> GetMouseButtonsDown();
-
-	//private:                                             *NOT WORKING*
-	//	static Vector2 s_PreviousMousePosition;            *NOT WORKING*
-	//	static Vector2 s_PreviousGlobalMousePosition;      *NOT WORKING*
 	};
 }

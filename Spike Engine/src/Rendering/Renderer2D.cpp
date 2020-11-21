@@ -5,6 +5,9 @@ namespace Spike {
 	SDL_Renderer* Renderer2D::s_Renderer = nullptr;
 	bool Renderer2D::s_AntiAliasing = false;
 	TTF_Font* Renderer2D::s_Font = nullptr;
+	float Renderer2D::s_HorizontalAlignmentMultiplier = 0;
+	float Renderer2D::s_VerticalAlignmentMultiplier = 0;
+	SpikeTextRenderMode Renderer2D::s_TextRenderMode = SpikeTextRenderMode::NORMAL;
 
 	bool Renderer2D::Init(SDL_Window* win, int idx, Uint32 flags)
 	{
@@ -51,16 +54,16 @@ namespace Spike {
 	void Renderer2D::DrawLine(int x1, int y1, int x2, int y2, int r, int g, int b, int a)
 	{
 		if (s_AntiAliasing)
-			aalineRGBA(s_Renderer, x1, y1, x2, y1, r, g, b, a);
+			aalineRGBA(s_Renderer, x1, y1, x2, y2, r, g, b, a);
 		else
-			lineRGBA(s_Renderer, x1, y1, x2, y1, r, g, b, a);
+			lineRGBA(s_Renderer, x1, y1, x2, y2, r, g, b, a);
 	}
 	void Renderer2D::DrawLine(int x1, int y1, int x2, int y2, const Color& color)
 	{
 		if (s_AntiAliasing)
-			aalineRGBA(s_Renderer, x1, y1, x2, y1, color.R, color.G, color.B, color.A);
+			aalineRGBA(s_Renderer, x1, y1, x2, y2, color.R, color.G, color.B, color.A);
 		else
-			lineRGBA(s_Renderer, x1, y1, x2, y1, color.R, color.G, color.B, color.A);
+			lineRGBA(s_Renderer, x1, y1, x2, y2, color.R, color.G, color.B, color.A);
 	}
 	void Renderer2D::DrawRect(int x, int y, int w, int h, int r, int g, int b, int a)
 	{
@@ -238,49 +241,99 @@ namespace Spike {
 	{
 		TTF_SetFontOutline(s_Font, thickness);
 	}
+	void Renderer2D::SetTextAlign(SpikeTextAlign horizontal, SpikeTextAlign vertical)
+	{
+		//Horizontal
+		if ((int)horizontal == 0)
+			s_HorizontalAlignmentMultiplier = 0;
+		else if ((int)horizontal == 1)
+			s_HorizontalAlignmentMultiplier = -0.5f;
+		else if ((int)horizontal == 2)
+			s_HorizontalAlignmentMultiplier = -1;
+
+		//Vertical
+		if ((int)vertical == 0)
+			s_VerticalAlignmentMultiplier = 0;
+		else if ((int)vertical == 1)
+			s_VerticalAlignmentMultiplier = -0.5f;
+		else if ((int)vertical == 2)
+			s_VerticalAlignmentMultiplier = -1;
+	}
 	void Renderer2D::SetFontHinting(int hinting)
 	{
 		TTF_SetFontHinting(s_Font, hinting);
 	}
-	void Renderer2D::SetFontKerning(bool value)
+	void Renderer2D::SetFontKerning(bool kerning)
 	{
-		TTF_SetFontKerning(s_Font, value);
+		TTF_SetFontKerning(s_Font, kerning);
+	}
+	void Renderer2D::SetTextRenderMode(SpikeTextRenderMode renderMode)
+	{
+		s_TextRenderMode = renderMode;
 	}
 	void Renderer2D::RenderText(const std::string& text, int x, int y, int r, int g, int b, int a)
 	{
-		SDL_Color color = { r, g, b, a };
-		SDL_Surface* temp = TTF_RenderText_Solid(s_Font, text.c_str(), color);
-		SDL_Texture* texture = SDL_CreateTextureFromSurface(s_Renderer, temp);
-		SDL_Rect rect = { x, y, temp->w, temp->h };
-		SDL_RenderCopy(s_Renderer, texture, NULL, &rect);
-		SDL_FreeSurface(temp);
+		if (s_Font != NULL)
+		{
+			SDL_Color color = { r, g, b, a };
+			SDL_Surface* temp = nullptr;
+			if (s_TextRenderMode == SpikeTextRenderMode::NORMAL)
+				temp = TTF_RenderText_Solid(s_Font, text.c_str(), color);
+			else if (s_TextRenderMode == SpikeTextRenderMode::ANTIALIASED)
+				temp = TTF_RenderText_Blended(s_Font, text.c_str(), color);
+			SDL_Texture* texture = SDL_CreateTextureFromSurface(s_Renderer, temp);
+			SDL_Rect rect = { x, y, temp->w, temp->h };
+			SDL_RenderCopy(s_Renderer, texture, NULL, &rect);
+			SDL_FreeSurface(temp);
+		}
 	}
 	void Renderer2D::RenderText(const std::string& text, int x, int y, const Color& color)
 	{
-		SDL_Color col = { color.R, color.G, color.B, color.A };
-		SDL_Surface* temp = TTF_RenderText_Solid(s_Font, text.c_str(), col);
-		SDL_Texture* texture = SDL_CreateTextureFromSurface(s_Renderer, temp);
-		SDL_Rect rect = { x, y, temp->w, temp->h };
-		SDL_RenderCopy(s_Renderer, texture, NULL, &rect);
-		SDL_FreeSurface(temp);
+		if (s_Font != NULL)
+		{
+			SDL_Color col = { color.R, color.G, color.B, color.A };
+			SDL_Surface* temp = nullptr;
+			if (s_TextRenderMode == SpikeTextRenderMode::NORMAL)
+				temp = TTF_RenderText_Solid(s_Font, text.c_str(), col);
+			else if (s_TextRenderMode == SpikeTextRenderMode::ANTIALIASED)
+				temp = TTF_RenderText_Blended(s_Font, text.c_str(), col);
+			SDL_Texture* texture = SDL_CreateTextureFromSurface(s_Renderer, temp);
+			SDL_Rect rect = { x + temp->w * s_HorizontalAlignmentMultiplier, y + temp->h * s_VerticalAlignmentMultiplier, temp->w, temp->h };
+			SDL_RenderCopy(s_Renderer, texture, NULL, &rect);
+			SDL_FreeSurface(temp);
+		}
 	}
 	void Renderer2D::RenderRotatedText(const std::string& text, int x, int y, int angle, int r, int g, int b, int a)
 	{
-		SDL_Color color = { r, g, b, a };
-		SDL_Surface* temp = TTF_RenderText_Solid(s_Font, text.c_str(), color);
-		SDL_Texture* texture = SDL_CreateTextureFromSurface(s_Renderer, temp);
-		SDL_Rect rect = { x, y, temp->w, temp->h };
-		SDL_RenderCopyEx(s_Renderer, texture, NULL, &rect, angle, NULL, SDL_FLIP_NONE);
-		SDL_FreeSurface(temp);
+		if (s_Font != NULL)
+		{
+			SDL_Color color = { r, g, b, a };
+			SDL_Surface* temp = nullptr;
+			if (s_TextRenderMode == SpikeTextRenderMode::NORMAL)
+				temp = TTF_RenderText_Solid(s_Font, text.c_str(), color);
+			else if (s_TextRenderMode == SpikeTextRenderMode::ANTIALIASED)
+				temp = TTF_RenderText_Blended(s_Font, text.c_str(), color);
+			SDL_Texture* texture = SDL_CreateTextureFromSurface(s_Renderer, temp);
+			SDL_Rect rect = { x + temp->w * s_HorizontalAlignmentMultiplier, y + temp->h * s_VerticalAlignmentMultiplier, temp->w, temp->h };
+			SDL_RenderCopyEx(s_Renderer, texture, NULL, &rect, angle, NULL, SDL_FLIP_NONE);
+			SDL_FreeSurface(temp);
+		}
 	}
 	void Renderer2D::RenderRotatedText(const std::string& text, int x, int y, int angle, const Color& color)
 	{
-		SDL_Color col = { color.R, color.G, color.B, color.A };
-		SDL_Surface* temp = TTF_RenderText_Solid(s_Font, text.c_str(), col);
-		SDL_Texture* texture = SDL_CreateTextureFromSurface(s_Renderer, temp);
-		SDL_Rect rect = { x, y, temp->w, temp->h };
-		SDL_RenderCopyEx(s_Renderer, texture, NULL, &rect, angle, NULL, SDL_FLIP_NONE);
-		SDL_FreeSurface(temp);
+		if (s_Font != NULL)
+		{
+			SDL_Color col = { color.R, color.G, color.B, color.A };
+			SDL_Surface* temp = nullptr;
+			if (s_TextRenderMode == SpikeTextRenderMode::NORMAL)
+				temp = TTF_RenderText_Solid(s_Font, text.c_str(), col);
+			else if (s_TextRenderMode == SpikeTextRenderMode::ANTIALIASED)
+				temp = TTF_RenderText_Blended(s_Font, text.c_str(), col);
+			SDL_Texture* texture = SDL_CreateTextureFromSurface(s_Renderer, temp);
+			SDL_Rect rect = { x + temp->w * s_HorizontalAlignmentMultiplier, y + temp->h * s_VerticalAlignmentMultiplier, temp->w, temp->h };
+			SDL_RenderCopyEx(s_Renderer, texture, NULL, &rect, angle, NULL, SDL_FLIP_NONE);
+			SDL_FreeSurface(temp);
+		}
 	}
 	void Renderer2D::RenderTexture(SDL_Texture* texture, const Vector2& position, const Vector2& size, const Color& color)
 	{

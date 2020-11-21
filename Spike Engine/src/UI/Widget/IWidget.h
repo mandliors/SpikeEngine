@@ -13,8 +13,6 @@ namespace Spike {
 		virtual Vector2 GetPosition();
 		virtual Vector2 GetSize();
 		virtual IWidget* GetParent();
-		virtual void SetPosition(const Vector2& position);
-		virtual void SetSize(const Vector2& size);
 		virtual void SetParent(IWidget* parent);
 		virtual void Show() = 0;
 		virtual void Hide() = 0;

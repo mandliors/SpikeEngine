@@ -10,10 +10,21 @@
 
 namespace Spike
 {
+	enum class SpikeTextAlign
+	{
+		LEFT = 0, CENTER = 1, RIGHT = 2, TOP = 0, BOTTOM = 2
+	};
+
+	enum class SpikeTextRenderMode
+	{
+		NORMAL = 0, ANTIALIASED
+	};
+
 	class Renderer2D
 	{
 	public:
 		Renderer2D() = delete;
+		~Renderer2D() { s_Renderer = nullptr; }
 		static bool Init(SDL_Window* win, int idx, Uint32 flags);
 		static void Close() { TTF_CloseFont(s_Font); }
 		static SDL_Renderer* GetRenderer();
@@ -56,8 +67,10 @@ namespace Spike
 		static void SetFont(const std::string& path, int size);
 		static void SetFontStyle(int style);
 		static void SetFontOutline(int thickness);
+		static void SetTextAlign(SpikeTextAlign horizontal, SpikeTextAlign vertical = SpikeTextAlign::TOP);
 		static void SetFontHinting(int hinting);
-		static void SetFontKerning(bool value);
+		static void SetFontKerning(bool kerning);
+		static void SetTextRenderMode(SpikeTextRenderMode renderMode);
 		static void RenderText(const std::string& text, int x, int y, int r = 255, int g = 255, int b = 255, int a = 255);
 		static void RenderText(const std::string& text, int x, int y, const Color& color);
 		static void RenderRotatedText(const std::string& text, int x, int y, int angle, int r = 255, int g = 255, int b = 255, int a = 255);
@@ -69,5 +82,8 @@ namespace Spike
 		static SDL_Renderer* s_Renderer;
 		static bool s_AntiAliasing;
 		static TTF_Font* s_Font;
+		static float s_HorizontalAlignmentMultiplier;
+		static float s_VerticalAlignmentMultiplier;
+		static SpikeTextRenderMode s_TextRenderMode;
 	};
 }

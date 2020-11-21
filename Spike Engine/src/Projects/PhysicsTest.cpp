@@ -1,4 +1,4 @@
-#include "Game/Game.h"
+#include "Game.h"
 #include "Core/SpikeEngine.h"
 
 #ifdef PhysicsTest
@@ -16,6 +16,8 @@ void Game::Start()
 {
 	Application::EnableConsole();
 	Application::SetMaxFPS(60);
+
+	Debug::SetLogLevel(Debug::LOG_LEVEL_ERROR);
 
 	auto [scene, cam] = Application::CreateSceneAndCamera();
 	mainScene = scene;
@@ -51,7 +53,7 @@ int x = 10;
 
 void Game::Update(float dt)
 {
-	Application::Clear(0, 0, 0, 0);
+	Application::Clear(40, 30, 20, 255);
 	Application::SetTitle("Spike Engine - FPS: " + std::to_string(Application::GetFPS()));
 
 	if (Input::GetMouseButton(0))
@@ -63,7 +65,7 @@ void Game::Update(float dt)
 		e.AddComponent<Rigidbody2D>(RIGIDBODY_TYPE::DYNAMIC);
 		e.AddComponent<NativeScript>().Bind<CreationScript>();
 
-		if (rand() % 2 == 0)
+		if (rand() & 1) //if odd
 		{
 			e.AddComponent<BoxCollider2D>();
 			e.AddComponent<SpriteRenderer>(Color::Random(false));
@@ -73,21 +75,21 @@ void Game::Update(float dt)
 			e.AddComponent<BoxCollider2D>();
 			e.AddComponent<SpriteRenderer>(Color::Random(false));
 			/*e.AddComponent<CircleCollider2D>();
-			e.AddComponent<SpriteRenderer>("assets/circle.png", Color::Random(true));*/
+			e.AddComponent<SpriteRenderer>("assets/circle.png", Color::Random(false));*/
 		}
 	}
 
-	if (Input::GetKey(SDL_SCANCODE_W))
+	if (Input::GetKey(SPIKE_KEYCODE_W))
 		mainCamera->SetPosition(mainCamera->GetPosition() + Vector2::Up() * speed * dt);
-	else if (Input::GetKey(SDL_SCANCODE_S))
+	else if (Input::GetKey(SPIKE_KEYCODE_S))
 		mainCamera->SetPosition(mainCamera->GetPosition() + Vector2::Down() * speed * dt);
-	if (Input::GetKey(SDL_SCANCODE_A))
+	if (Input::GetKey(SPIKE_KEYCODE_A))
 		mainCamera->SetPosition(mainCamera->GetPosition() + Vector2::Left() * speed * dt);
-	else if (Input::GetKey(SDL_SCANCODE_D))
+	else if (Input::GetKey(SPIKE_KEYCODE_D))
 		mainCamera->SetPosition(mainCamera->GetPosition() + Vector2::Right() * speed * dt);
-	if (Input::GetKey(SDL_SCANCODE_Q))
+	if (Input::GetKey(SPIKE_KEYCODE_Q))
 		mainCamera->SetRotation(mainCamera->GetRotation() - speed / 2 * dt);
-	else if (Input::GetKey(SDL_SCANCODE_E))
+	else if (Input::GetKey(SPIKE_KEYCODE_E))
 		mainCamera->SetRotation(mainCamera->GetRotation() + speed / 2 * dt);
 	mainCamera->SetScale(mainCamera->GetScale() * (1.0f + Input::GetMouseWheel() * 0.2f));
 
@@ -104,7 +106,7 @@ class CreationScript : public ScriptableEntity
 public:
 	void Setup()
 	{
-		Debug::Log("New entity was created");
+		Debug::Info("New entity was created");
 	}
 };
 

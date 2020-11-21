@@ -2,67 +2,68 @@
 
 namespace Spike {
 
-	float Math::Sin(float value)
+	double Math::Abs(double value)
 	{
-		return (float)sin(value);
+		return value < 0 ? value * -1 : value;
 	}
-	float Math::Cos(float value)
+	double Math::Sin(double value)
 	{
-		return (float)cos(value);
+		return sin(value);
 	}
-	float Math::Tan(float value)
+	double Math::Cos(double value)
 	{
-		return (float)tan(value);
+		return cos(value);
 	}
-	float Math::Asin(float value)
+	double Math::Tan(double value)
 	{
-		return (float)asin(value);
+		return tan(value);
 	}
-	float Math::Acos(float value)
+	double Math::Asin(double value)
 	{
-		return (float)acos(value);
+		return asin(value);
 	}
-	float Math::Atan(float value)
+	double Math::Acos(double value)
 	{
-		return (float)atan(value);
+		return acos(value);
 	}
-	float Math::Atan2(float a, float b)
+	double Math::Atan(double value)
 	{
-		return (float)atan2(a, b);
+		return atan(value);
 	}
-	float Math::Map(float value, float min, float max, float from, float to)
+	double Math::Atan2(double a, double b)
+	{
+		return atan2(a, b);
+	}
+	double Math::Log(double value)
+	{
+		return log(value);
+	}
+	double Math::Map(double value, double min, double max, double from, double to)
 	{
 		return (from * (max - value) + to * (value - min)) / (max - min);
 	}
-	float Math::Clamp(float t, float x, float y)
+	double Math::Clamp(double t, double x, double y)
 	{
 		return t < x ? x : t > y ? y : t;
 	}
-	float Math::Constrain(float t, float x, float y)
+	double Math::Constrain(double t, double x, double y)
 	{
 		return Clamp(t, x, y);
 	}
-	float Math::ToDegrees(float value)
+	double Math::ToDegrees(double value)
 	{
 		return value * 57.2957795;
 	}
-	float Math::ToRadians(float value)
+	double Math::ToRadians(double value)
 	{
 		return value * 0.0174532925f;
 	}
-	Vector2 Math::Lerp(const Vector2& a, const Vector2& b, float t)
+	Vector2 Math::Lerp(const Vector2& a, const Vector2& b, double t)
 	{
 		return a + (b - a) * t;
 	}
-	Vector3 Math::Lerp(const Vector3& a, const Vector3& b, float t)
+	Vector3 Math::Lerp(const Vector3& a, const Vector3& b, double t)
 	{
 		return a + (b - a) * t;
-	}
-
-	bool Math::OverlapPoint(const Vector2& point, const Vector2& position, const Vector2& size)
-	{
-		if (point.X < position.X || point.X > position.X + size.X) return false;
-		if (point.Y < position.Y || point.Y > position.Y + size.Y) return false;
-		return true;
 	}
 }

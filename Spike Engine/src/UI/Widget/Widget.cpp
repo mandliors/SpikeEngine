@@ -4,11 +4,6 @@
 
 namespace Spike {
 
-	void Widget::SetBackColor(const Color& color)
-	{
-		m_BackColor = color;
-	}
-
 	Constraint* Widget::GetConstraint()
 	{
 		return m_Constraint;
@@ -37,7 +32,7 @@ namespace Spike {
 		//mouse click, focus
 		if (Input::GetMouseButtonUp(0))
 		{
-			if (Math::OverlapPoint(Input::GetMousePosition(), m_Position, m_Size))
+			if (Utility::OverlapPoint(Input::GetMousePosition(), m_Position, m_Size))
 			{
 				if (!m_Focused) OnFocusEnter();
 				m_Focused = true;
@@ -46,7 +41,7 @@ namespace Spike {
 			else if (m_Focused) { m_Focused = false; OnFocusLeave(); }
 		}
 		//mouse movement
-		if (Math::OverlapPoint(Input::GetMousePosition(), m_Position, m_Size))
+		if (Utility::OverlapPoint(Input::GetMousePosition(), m_Position, m_Size))
 		{
 			if (m_Hovering) OnMouseHover();
 			else { m_Hovering = true; OnMouseEnter(); OnMouseHover(); }

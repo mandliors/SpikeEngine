@@ -1,9 +1,19 @@
 #include "Scene.h"
 #include "ECS/Components.h"
 #include "ECS/Entity/Entity.h"
+#include <thread>
 
 namespace Spike {
 
+	/*void UpdateThreadWrapper(Scene* scene)
+	{
+		scene->Update();
+	}
+	void RenderThreadWrapper(Scene* scene)
+	{
+		scene->Render();
+	}*/
+	
 	Scene::~Scene()
 	{
 		/*auto sprites = m_Registry.view<SpriteRenderer>();
@@ -29,23 +39,29 @@ namespace Spike {
 	void Scene::Init()
 	{
 		m_Registry = entt::registry();
+
+		/*std::thread updateThread(UpdateThreadWrapper, this);
+		std::thread renderThread(RenderThreadWrapper, this);
+		
+		m_UpdateThreadRunning = true;
+		m_RenderThreadRunning = true;*/
 	}
 	void Scene::Update()
 	{
-		SPIKE_ASSERT(m_ActiveCamera, "Camera was NULL");
-
+		/*while (m_UpdateThreadRunning)
+		{*/
 		#pragma region Scripting
 		m_Registry.view<NativeScript>().each([=](auto entity, auto& ns)
-		{
-			if (ns.Instance == nullptr)
 			{
-				ns.Instance = ns.InstantiateScript();
-				ns.Instance->m_Entity = Entity(entity, this);
-				ns.Instance->Setup();
-			}
-		
-			ns.Instance->Update();
-		});
+				if (ns.Instance == nullptr)
+				{
+					ns.Instance = ns.InstantiateScript();
+					ns.Instance->m_Entity = Entity(entity, this);
+					ns.Instance->Setup();
+				}
+
+				ns.Instance->Update();
+			});
 		#pragma endregion
 
 		#pragma region Physics
@@ -56,13 +72,20 @@ namespace Spike {
 		{
 			auto [transform, rigidbody2D] = bodies.get<Transform, Rigidbody2D>(body);
 			transform.Position = Vector2(rigidbody2D.Body->GetPosition().x * Physics::PPM - transform.Size.X / 2,
-										 rigidbody2D.Body->GetPosition().y * Physics::PPM - transform.Size.Y / 2);
+				rigidbody2D.Body->GetPosition().y * Physics::PPM - transform.Size.Y / 2);
 			transform.Rotation = Math::ToDegrees(rigidbody2D.Body->GetAngle());
 		}
 		#pragma endregion
+		//}
+	}
+	void Scene::Render()
+	{
+		/*while (m_RenderThreadRunning)
+		{*/
+		SPIKE_ASSERT(m_ActiveCamera, "Camera was NULL");
 
-		#pragma region Rendering
 		auto sprites = m_Registry.group<SpriteRenderer>(entt::get<Transform>);
+
 		for (auto sprite : sprites)
 		{
 			auto [transform, spriteRenderer] = sprites.get<Transform, SpriteRenderer>(sprite);
@@ -76,17 +99,18 @@ namespace Spike {
 					SDL_Point point = { 640, 360 };
 					if (spriteRenderer.Path.empty())
 						Renderer2D::FillRotatedRect(transform.Position.X - m_ActiveCamera->GetPosition().X,
-													transform.Position.Y - m_ActiveCamera->GetPosition().Y,
-													transform.Size.X * m_ActiveCamera->GetScale(),
-													transform.Size.Y * m_ActiveCamera->GetScale(),
-													transform.Rotation - m_ActiveCamera->GetRotation(), spriteRenderer.RenderColor);
+							transform.Position.Y - m_ActiveCamera->GetPosition().Y,
+							transform.Size.X * m_ActiveCamera->GetScale(),
+							transform.Size.Y * m_ActiveCamera->GetScale(),
+							transform.Rotation - m_ActiveCamera->GetRotation(), spriteRenderer.RenderColor);
 					else
 					{
+						// TODO: Don't always load and create textures (big performance issue)
 						SDL_Surface* temp = IMG_Load(spriteRenderer.Path.c_str());
 						SDL_Texture* texture = SDL_CreateTextureFromSurface(Renderer2D::GetRenderer(), temp);
 						Renderer2D::RenderRotatedTexture(texture, transform.Position - m_ActiveCamera->GetPosition(),
-																  transform.Size * m_ActiveCamera->GetScale(),
-																  transform.Rotation - m_ActiveCamera->GetRotation(), spriteRenderer.RenderColor);
+							transform.Size * m_ActiveCamera->GetScale(),
+							transform.Rotation - m_ActiveCamera->GetRotation(), spriteRenderer.RenderColor);
 						SDL_DestroyTexture(texture);
 						SDL_FreeSurface(temp);
 					}
@@ -107,8 +131,13 @@ namespace Spike {
 				}
 			}
 		}
-		#pragma endregion
+		//}
 	}
+	/*void Scene::StopThreads()
+	{
+		m_UpdateThreadRunning = false;
+		m_RenderThreadRunning = false;
+	}*/
 
 	Camera2D* Scene::CreateCamera(const Vector2& position, float rotation, float scale)
 	{

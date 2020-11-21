@@ -3,12 +3,14 @@
 #include "SDL.h"
 #include "SDL_image.h"
 #include "SDL_ttf.h"
+#include "SDL_mixer.h"
 #include "Core.h"
 #include "Events/EventManager.h"
 #include "Input/Input.h"
 #include "Rendering/Renderer2D.h"
 #include "Time/Time.h"
 #include "UI/SpikeUI/SpikeUI.h"
+#include "Audio/AudioManager.h"
 #include "ECS/Scene/Scene.h"
 #include "ECS/Camera2D/Camera2D.h"
 #include "ImGui/imgui.h"
@@ -34,12 +36,13 @@ namespace Spike
 		~Application();
 
 		//base
-		static bool Init(std::string title, int width, int height, Uint32 windowFlags = SDL_WINDOW_RESIZABLE, Uint32 rendererFlags = SDL_RENDERER_ACCELERATED);
+		static bool Init(const std::string& title, int width, int height, Uint32 windowFlags = SDL_WINDOW_SHOWN, Uint32 rendererFlags = SDL_RENDERER_ACCELERATED);
 		static bool IsRunning() { return s_Running; }
 		static void Update();
 		static void Render();
 		static void Close();
-		static void SetTitle(std::string title);
+		static void SetTitle(const std::string& title);
+		static void SetIcon(const std::string& path);
 		//window
 		static SDL_Window* GetWindow();
 		static void InitImGui();

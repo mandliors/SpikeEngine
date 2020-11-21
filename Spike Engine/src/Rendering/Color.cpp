@@ -68,7 +68,10 @@ namespace Spike {
 
 	Color Color::operator*(float mult)
 	{
-		return Color(R + (255 - R) * (mult - 1.0f), G + (255 - G) * (mult - 1.0f), B + (255 - B) * (mult - 1.0f), A);
+		if (mult < 1.0f)
+			return Color(R * mult, G * mult, B * mult, A);
+		else
+			return Color(R + (255 - R) * (mult - 1.0f), G + (255 - G) * (mult - 1.0f), B + (255 - B) * (mult - 1.0f), A);
 	}
 
 	Color Color::Multiply(float mult)

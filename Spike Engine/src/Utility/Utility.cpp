@@ -1,7 +1,7 @@
-#include "Benchmarking.h"
+#include "Utility.h"
 
 namespace Spike {
-	namespace Benchmarking {
+	namespace Utility {
 
 		#pragma region Timer
 		Timer::Timer(const std::string& name)
@@ -48,5 +48,14 @@ namespace Spike {
 				std::cout << "[ScopedTimer]: " << duration << "us (" << ms << "ms)" << std::endl;
 		}
 		#pragma endregion
-	} 
+
+		#pragma region Functions
+		bool OverlapPoint(const Vector2& point, const Vector2& position, const Vector2& size)
+		{
+			if (point.X < position.X || point.X > position.X + size.X) return false;
+			if (point.Y < position.Y || point.Y > position.Y + size.Y) return false;
+			return true;
+		}
+		#pragma endregion
+	}
 }

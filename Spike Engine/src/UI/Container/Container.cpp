@@ -74,17 +74,20 @@ namespace Spike {
 
 	void Container::Render()
 	{
-		if (m_Parent != nullptr)
+		if (!m_Hidden)
 		{
-			//draw interior
-			Renderer2D::FillRoundedRect(m_Position.X, m_Position.Y, m_Size.X, m_Size.Y, m_CornerRoundness, m_BackColor);
-			
-			//draw border
-			for (size_t i = 0; i < m_BorderWidth; i++)
-				Renderer2D::DrawRoundedRect(m_Position.X + i, m_Position.Y + i, m_Size.X + 1 - 2 * i, m_Size.Y + 1 - 2 * i, m_CornerRoundness, m_BorderColor);
+			if (m_Parent != nullptr)
+			{
+				//draw interior
+				Renderer2D::FillRoundedRect(m_Position.X, m_Position.Y, m_Size.X, m_Size.Y, m_CornerRoundness, m_BackColor);
+
+				//draw border
+				for (size_t i = 0; i < m_BorderWidth; i++)
+					Renderer2D::DrawRoundedRect(m_Position.X + i, m_Position.Y + i, m_Size.X + 1 - 2 * i, m_Size.Y + 1 - 2 * i, m_CornerRoundness, m_BorderColor);
+			}
+			for (IWidget* widget : m_Widgets)
+				widget->Render();
 		}
-		for (IWidget* widget : m_Widgets)
-			widget->Render();
 	}
 
 }

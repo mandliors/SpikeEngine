@@ -1,6 +1,8 @@
 #pragma once
 
 #include "SDL.h"
+#include <map>
+#include <string>
 
 namespace Spike {
 
@@ -9,16 +11,18 @@ namespace Spike {
 		Time() = delete;
 		~Time() = default;
 
-		static void SetReferenceTime(int ticks = SDL_GetTicks());
+		static void Bind(const std::string& id, int referenceTimeTicks = SDL_GetTicks());
+		static void Unbind(const std::string& id);
+		static void SetReferenceTime(const std::string& id, int referenceTimeTicks = SDL_GetTicks());
 		static int GetElapsedMillis();
+		static int GetElapsedMillis(const std::string& id);
 		static int GetElapsedSeconds();
-		static int GetElapsedMillisSinceInit();
+		static int GetElapsedSeconds(const std::string& id);
 		static float GetDeltaTime();
-		static int GetElapsedSecondsSinceInit();
 
 		static float s_DeltaTime;
 	
 	private:
-		static int s_ReferenceTimeTicks;
+		static std::map<std::string, int> s_ReferenceTimes;
 	};
 }

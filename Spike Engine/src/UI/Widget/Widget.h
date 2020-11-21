@@ -4,13 +4,13 @@
 #include "UI/Widget/IWidget.h"
 #include "Rendering/Color.h"
 #include "UI/Constraints/Constraint.h"
+#include "Utility/Utility.h"
 
 namespace Spike {
 
 	class Widget : public IWidget
 	{
 	public:
-		virtual void SetBackColor(const Color& color);
 		Constraint* GetConstraint();
 		void SetConstraint(Constraint* constraint);
 		virtual void Show() override;

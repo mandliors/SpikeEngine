@@ -1,9 +1,6 @@
-/* Game of life source code
-
-
-
-#include "SpikeEngine.h"
+#include "Core/SpikeEngine.h"
 #include <iostream>
+
 
 using namespace Spike;
 
@@ -18,7 +15,9 @@ int main(void)
 	std::cin >> SPEED;
 	SPEED = Math::Clamp(SPEED, 1, 240);
 
-	Application::Init("Game of life", WINDOW_SIZE + 1, WINDOW_SIZE + 1);
+
+	std::cout << Application::Init("Game of life", WINDOW_SIZE + 1, WINDOW_SIZE + 1);
+
 
 	const int PIXEL_COUNT = WINDOW_SIZE / PIXEL_SIZE;
 
@@ -101,12 +100,12 @@ int main(void)
 		else
 		{
 			//drawing cells
-			if (Input::GetMouseButton(SDL_BUTTON_LEFT))
+			if (Input::GetMouseButton(0))
 				newMap[(int)Math::Clamp(Input::GetMousePosition().X / PIXEL_SIZE, 0, PIXEL_COUNT - 1)][(int)Math::Clamp(Input::GetMousePosition().Y / PIXEL_SIZE, 0, PIXEL_COUNT - 1)] = 1;
-			else if (Input::GetMouseButton(SDL_BUTTON_RIGHT))
-				newMap[(int)Input::GetMousePosition().X / PIXEL_SIZE][(int)Input::GetMousePosition().Y / PIXEL_SIZE] = 0;
+			else if (Input::GetMouseButton(2))
+				newMap[(int)Math::Clamp(Input::GetMousePosition().X / PIXEL_SIZE, 0, PIXEL_COUNT - 1)][(int)Math::Clamp(Input::GetMousePosition().Y / PIXEL_SIZE, 0, PIXEL_COUNT - 1)] = 0;
 		}
-		
+
 		//draw map
 		for (size_t i = 0; i < PIXEL_COUNT; i++)
 		{
@@ -131,5 +130,3 @@ int main(void)
 
 	Application::Close();
 }
-
-*/

@@ -1,11 +1,12 @@
 #pragma once
 
-#include <chrono>
 #include <iostream>
 #include <string>
+#include <chrono>
+#include "Math/Vector2.h"
 
-namespace Spike { 
-	namespace Benchmarking {
+namespace Spike {
+	namespace Utility {
 
 		class Timer
 		{
@@ -30,5 +31,7 @@ namespace Spike {
 			std::chrono::time_point<std::chrono::high_resolution_clock> m_StartTime;
 			std::string m_Name;
 		};
+
+		bool OverlapPoint(const Vector2& point, const Vector2& position, const Vector2& size);
 	}
 }

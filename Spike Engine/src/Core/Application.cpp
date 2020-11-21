@@ -23,20 +23,38 @@ namespace Spike {
 			delete scene;
 		m_Scenes.clear();
 	}
-	bool Application::Init(std::string title, int width, int height, Uint32 windowFlags, Uint32 rendererFlags)
+	bool Application::Init(const std::string& title, int width, int height, Uint32 windowFlags, Uint32 rendererFlags)
 	{
 		bool success = true;
 		HWND console = GetConsoleWindow();
 		ShowWindow(console, SW_HIDE);
 		if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
 		{
+			//Setup SDL window
 			s_Window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, windowFlags);
-			if (!Renderer2D::Init(s_Window, -1, rendererFlags))
-				success = false;
 
+			if (!Renderer2D::Init(s_Window, -1, rendererFlags))
+			{
+				Debug::__ENGINE_LOG("Application initialization failed: ", SDL_GetError());
+				success = false;
+			}
+
+			//Initialize PNG loading
 			int imgFlags = IMG_INIT_PNG;
 			if (!(IMG_Init(imgFlags) & imgFlags))
+			{
+				Debug::__ENGINE_LOG("Application initialization failed: ", IMG_GetError());
 				success = false;
+			}
+			else
+				SetIcon("assets/spike.png");
+
+			//Initialize SDL_mixer
+			if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+			{
+				Debug::__ENGINE_LOG("Application initialization failed: ", Mix_GetError());
+				success = false;
+			}
 
 			EventManager::Init();
 			EventManager::SetFPS(s_MaxFPS);
@@ -47,7 +65,10 @@ namespace Spike {
 			s_Running = true;
 		}
 		else
+		{
+			Debug::__ENGINE_LOG("Application initialization failed: ", SDL_GetError());
 			success = false;
+		}
 		return success;
 	}
 	void Application::Update()
@@ -63,11 +84,11 @@ namespace Spike {
 			s_Running = false;
 		
 		//FPS
-		s_FPS = s_Frames / ((SDL_GetTicks() - s_StartTicks) / 1000.0f);
-		if (s_FPS > 2000000) s_FPS = 0;
-		//s_FPS = 1.0f / Time::s_DeltaTime;
+		/*s_FPS = s_Frames / ((SDL_GetTicks() - s_StartTicks) / 1000.0f);
+		if (s_FPS > 2000000) s_FPS = 0;*/
+		s_FPS = 1.0f / Time::s_DeltaTime;
 
-		//SpikeGUI
+		//SpikeUI
 		SpikeUI::Update();
 
 		if (s_ImGuiInitialized)
@@ -84,7 +105,10 @@ namespace Spike {
 
 		//Scene
 		if (m_ActiveScene)
+		{
 			m_ActiveScene->Update();
+			m_ActiveScene->Render();
+		}
 
 		//SpikeGUI
 		SpikeUI::Render();
@@ -134,6 +158,7 @@ namespace Spike {
 	}
 	void Application::Close()
 	{
+		AudioManager::Close();
 		Input::Close();
 		SpikeUI::Close();
 		Renderer2D::Close();
@@ -144,13 +169,21 @@ namespace Spike {
 		}
 		SDL_DestroyWindow(s_Window);
 		SDL_DestroyRenderer(Renderer2D::GetRenderer());
+		s_Window = nullptr;
+		Mix_Quit();
 		IMG_Quit();
 		TTF_Quit();
 		SDL_Quit();
 	}
-	void Application::SetTitle(std::string title)
+	void Application::SetTitle(const std::string& title)
 	{
 		SDL_SetWindowTitle(s_Window, title.c_str());
+	}
+	void Application::SetIcon(const std::string& path)
+	{
+		SDL_Surface* logo = IMG_Load(path.c_str());
+		SDL_SetWindowIcon(s_Window, logo);
+		SDL_FreeSurface(logo);
 	}
 	Vector2 Application::GetScreenSize(Uint8 idx)
 	{

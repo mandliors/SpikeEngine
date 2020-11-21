@@ -18,6 +18,8 @@ namespace Spike {
 
 		void Init();
 		void Update();
+		void Render();
+		//void StopThreads();
 		Camera2D* CreateCamera(const Vector2& position = Vector2::Empty(), float rotation = 0.0f, float scale = 1.0f);
 		void SetActiveCamera(int index);
 		Entity& CreateEntity(const std::string& name = std::string());
@@ -35,6 +37,8 @@ namespace Spike {
 		std::vector<Camera2D*> m_Cameras;
 		std::vector<Entity*> m_Entities;
 		Camera2D* m_ActiveCamera = nullptr;
+		/*bool m_UpdateThreadRunning = false;
+		bool m_RenderThreadRunning = false;*/
 
 		friend class Entity;
 	};
