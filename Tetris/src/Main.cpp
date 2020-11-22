@@ -56,11 +56,11 @@ int main(void)
 	int columnCount = 4;
 	int rotation = 1;
 	BlockType currentBlockType;
+	bool inGame = true;
 
 	//Initialization
 	Application::Init("Tetris by Progmaster", 400, 800);
 	Application::SetMaxFPS(60);
-	Application::EnableConsole();
 	memset(table, 0, sizeof(table));
 	memset(currentBlock, 0, sizeof(currentBlock));
 	memset(currentBlockEndPosition, 0, sizeof(currentBlockEndPosition));
@@ -71,14 +71,19 @@ int main(void)
 	Time::Bind("StepTime");
 	Renderer2D::SetTextAlign(SpikeTextAlign::CENTER);
 	Renderer2D::SetTextRenderMode(SpikeTextRenderMode::ANTIALIASED);
+	Renderer2D::SetFont("assets/FreeMono.ttf", 24);
 
-
-	//Audio test
-	Music music = AudioManager::LoadMusic("assets/tetris.mp3");
-	music.Loop();
-
-	int vol = 100;
+	//Audio
+	int vol = 10;
 	bool muted = false;
+	Music& music = AudioManager::LoadMusic("assets/tetris.mp3");
+	Sound& down = AudioManager::LoadSound("assets/down.wav");
+	Sound& nying = AudioManager::LoadSound("assets/nying.wav");
+	Sound& gameOver = AudioManager::LoadSound("assets/game_over.wav");
+	music.Loop();
+	music.SetVolume(vol);
+	down.SetVolume(100);
+	nying.SetVolume(50);
 
 	//Game loop
 	while (Application::IsRunning())
@@ -86,89 +91,115 @@ int main(void)
 		//Update
 		Application::Update();
 
-		//Check for input
-		music.SetVolume(vol = Math::Clamp(vol + Input::GetMouseWheel() * 10, 0, 128));
-		if (Input::GetKeyDown(SPIKE_KEYCODE_ESCAPE))
-		{
-			muted = !muted;
-			music.Mute(muted);
-		}
+		//Clear the screen
+		Renderer2D::Clear(COLORS[0]);
 
-		if (Input::GetKeyDown(SPIKE_KEYCODE_LEFT))
+		if (inGame)
 		{
-			Move(currentBlock, -1);
-			columnCount--;
-			CalculateEndPosition(currentBlock, currentBlockEndPosition);
-		}
-		else if (Input::GetKeyDown(SPIKE_KEYCODE_RIGHT))
-		{
-			Move(currentBlock, 1);
-			columnCount++;
-			CalculateEndPosition(currentBlock, currentBlockEndPosition);
-		}
-		if (Input::GetKeyDown(SPIKE_KEYCODE_UP))
-		{
-			for (int i = 0; i < 7; i += 2)
-				table[currentBlock[i]][currentBlock[i + 1]] = 0;
-
-			if (Rotate(currentBlock, currentBlockType, rotation % 4 + 1, rowCount, columnCount))
-				rotation = rotation % 4 + 1;
-
-			for (int i = 0; i < 7; i += 2)
-				table[currentBlock[i]][currentBlock[i + 1]] = (int)currentBlockType;
-
-			CalculateEndPosition(currentBlock, currentBlockEndPosition);
-		}
-		if (Input::GetKey(SPIKE_KEYCODE_DOWN))
-		{
-			//Step
-			if (Step(currentBlock))
+			//Check for input
+			music.SetVolume(vol = Math::Clamp(vol + Input::GetMouseWheel() * 10, 0, 100));
+			if (Input::GetKeyDown(SPIKE_KEYCODE_ESCAPE))
 			{
-				HandleLines();
-				if (CheckLoss())
-					std::cout << "Game Over!" << std::endl;
-				randomShape = rand() % 7 + 1;
-				currentBlockType = (BlockType)randomShape;
-				rowCount = SpawnShape(currentBlockType, currentBlock);
-				CalculateEndPosition(currentBlock, currentBlockEndPosition);
-				Time::SetReferenceTime("StepTime");
-				stepCount = 0;
-				columnCount = 4;
-				rotation = 1;
+				muted = !muted;
+				music.Mute(muted);
 			}
-			else
-				rowCount++;
-		}
 
-		//Update time and check if it has to step
-		if (Time::GetElapsedMillis("StepTime") / STEP_TIME > stepCount)
-		{
-			stepCount = Time::GetElapsedMillis("StepTime") / STEP_TIME;
-
-			//Step
-			if (Step(currentBlock))
+			if (Input::GetKeyDown(SPIKE_KEYCODE_LEFT))
 			{
-				HandleLines();
-				if (CheckLoss())
-					std::cout << "Game Over!" << std::endl;
-				randomShape = rand() % 7 + 1;
-				currentBlockType = (BlockType)randomShape;
-				rowCount = SpawnShape(currentBlockType, currentBlock);
+				Move(currentBlock, -1);
+				columnCount--;
 				CalculateEndPosition(currentBlock, currentBlockEndPosition);
-				Time::SetReferenceTime("StepTime");
-				stepCount = 0;
-				columnCount = 4;
-				rotation = 1;
 			}
-			else
-				rowCount++;
-		}
+			else if (Input::GetKeyDown(SPIKE_KEYCODE_RIGHT))
+			{
+				Move(currentBlock, 1);
+				columnCount++;
+				CalculateEndPosition(currentBlock, currentBlockEndPosition);
+			}
+			if (Input::GetKeyDown(SPIKE_KEYCODE_UP))
+			{
+				for (int i = 0; i < 7; i += 2)
+					table[currentBlock[i]][currentBlock[i + 1]] = 0;
 
-		//Draw the shapes
-		DrawTable();
-		DrawEndPosition(currentBlockEndPosition, currentBlockType);
-		DrawCurrentBlock(currentBlock);
-		Renderer2D::RenderText("Pontok: 0", Application::GetWindowSize().X / 2, 10, Color::White());
+				if (Rotate(currentBlock, currentBlockType, rotation % 4 + 1, rowCount, columnCount))
+					rotation = rotation % 4 + 1;
+
+				for (int i = 0; i < 7; i += 2)
+					table[currentBlock[i]][currentBlock[i + 1]] = (int)currentBlockType;
+
+				CalculateEndPosition(currentBlock, currentBlockEndPosition);
+			}
+			if (Input::GetKey(SPIKE_KEYCODE_DOWN))
+			{
+				//Step
+				if (Step(currentBlock))
+				{
+					if (HandleLines() > 0)
+						nying.Play();
+					else
+						down.Play();
+					if (CheckLoss())
+					{
+						inGame = false;
+						music.Stop();
+						gameOver.Play();
+						Renderer2D::SetFont("assets/FreeMono.ttf", 40);
+						Application::SetWindowSize(Vector2(Application::GetWindowSize().X, 160));
+					}
+					randomShape = rand() % 7 + 1;
+					currentBlockType = (BlockType)randomShape;
+					rowCount = SpawnShape(currentBlockType, currentBlock);
+					CalculateEndPosition(currentBlock, currentBlockEndPosition);
+					Time::SetReferenceTime("StepTime");
+					stepCount = 0;
+					columnCount = 4;
+					rotation = 1;
+				}
+				else
+					rowCount++;
+			}
+
+			//Update time and check if it has to step
+			if (Time::GetElapsedMillis("StepTime") / STEP_TIME > stepCount)
+			{
+				stepCount = Time::GetElapsedMillis("StepTime") / STEP_TIME;
+
+				//Step
+				if (Step(currentBlock))
+				{
+					if (HandleLines() > 0)
+						nying.Play();
+					else
+						down.Play();
+					if (CheckLoss())
+					{
+						inGame = false;
+						music.Stop();
+						gameOver.Play();
+						Renderer2D::SetFont("assets/FreeMono.ttf", 40);
+						Application::SetWindowSize(Vector2(Application::GetWindowSize().X, 160));
+					}
+					randomShape = rand() % 7 + 1;
+					currentBlockType = (BlockType)randomShape;
+					rowCount = SpawnShape(currentBlockType, currentBlock);
+					CalculateEndPosition(currentBlock, currentBlockEndPosition);
+					Time::SetReferenceTime("StepTime");
+					stepCount = 0;
+					columnCount = 4;
+					rotation = 1;
+				}
+				else
+					rowCount++;
+			}
+
+			//Draw the shapes
+			DrawTable();
+			DrawEndPosition(currentBlockEndPosition, currentBlockType);
+			DrawCurrentBlock(currentBlock);
+			Renderer2D::RenderText("Points: 0", Application::GetWindowSize().X / 2, 10, Color::White());
+		}
+		else
+			Renderer2D::RenderText("Game Over!", Application::GetWindowSize().X * 0.5f, 60, Color::White());
 
 		//Render
 		Application::Render();
@@ -322,6 +353,8 @@ bool Step(int* block)
 {
 	bool collision = false;
 	int n = table[block[0]][block[1]];
+
+	//Check collision
 	for (int i = 0; i < 7; i += 2)
 	{
 		if (block[i] == V_SQUARE_COUNT + 3)
@@ -336,6 +369,7 @@ bool Step(int* block)
 	}
 	else
 	{
+		//Move down
 		for (int i = 0; i < 7; i += 2)
 		{
 			table[block[i]++][block[i + 1]] = 0;
@@ -345,6 +379,7 @@ bool Step(int* block)
 			table[block[i]][block[i + 1]] = n;
 		}
 	}
+
 	return collision;
 }
 
@@ -699,7 +734,9 @@ bool Rotate(int* block, BlockType type, int rotation, int rowCount, int columnCo
 
 int HandleLines()
 {
-	//Check for tetrisses
+	int lineCount = 0;
+
+	//Check for filled lines
 	for (int i = V_SQUARE_COUNT + 3; i >= 0; i--)
 	{
 		for (int j = 0; j < H_SQUARE_COUNT; j++)
@@ -710,11 +747,12 @@ int HandleLines()
 			{
 				SpliceTable(i);
 				j = 0;
+				lineCount++;
 			}
 		}
 	}
 
-	return 0;
+	return lineCount;
 }
 
 void SpliceTable(int index)

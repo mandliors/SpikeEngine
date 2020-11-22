@@ -7,10 +7,6 @@ namespace Spike {
 	{
 		m_Chunk = chunk;
 	}
-	Sound::~Sound()
-	{
-		Mix_FreeChunk(m_Chunk);
-	}
 	void Sound::Play(bool loop)
 	{
 		if (m_Chunk != nullptr)
@@ -36,7 +32,7 @@ namespace Spike {
 	{
 		if (m_Chunk)
 		{
-			m_Volume = (int)Math::Map(Math::Clamp(volume, 0, 128), 0, 128, 0, 100);
+			m_Volume = (int)Math::Map(Math::Clamp(volume, 0, 128), 0, 100, 0, 128);
 			if (!m_Muted)
 				Mix_VolumeChunk(m_Chunk, m_Volume);
 		}

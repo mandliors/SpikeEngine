@@ -1,4 +1,5 @@
 #include "AudioManager.h"
+#include "Debug/Debug.h"
 
 namespace Spike {
 
@@ -8,6 +9,8 @@ namespace Spike {
 	Sound& AudioManager::LoadSound(const std::string& path)
 	{
 		Mix_Chunk* chunk = Mix_LoadWAV(path.c_str());
+		if (chunk == NULL)
+			Debug::Error("Error while loading audio: ", Mix_GetError());
 		Sound* sound = new Sound(chunk);
 		s_Sounds.push_back(sound);
 		return *sound;

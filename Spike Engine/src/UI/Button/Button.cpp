@@ -4,14 +4,18 @@
 
 namespace Spike {
 
-	Button::Button(const std::string& text, void(*func)(), const Color& backColor, const Color& borderColor, uint32_t borderWidth, uint8_t roundness)
+	Button::Button(const std::string& text, void(*func)(), 
+				   const Color& backColor,
+				   const Color& borderColor,
+				   const Color& foreColor, uint32_t borderWidth, uint8_t roundness)
 	{
+		m_Text = text;
 		m_ClickFunc = func;
 		m_BackColor = backColor;
 		m_BorderColor = borderColor;
 		m_HoverColor = m_BackColor * 1.1f;
 		m_PressColor = m_BackColor * 1.2f;
-		m_ForegroundColor = Color::White();
+		m_ForegroundColor = foreColor;
 		m_BorderWidth = borderWidth;
 		m_CornerRoundness = roundness;
 	}
@@ -43,6 +47,10 @@ namespace Spike {
 			//draw border
 			for (size_t i = 0; i < m_BorderWidth; i++)
 				Renderer2D::DrawRoundedRect(m_Position.X + i, m_Position.Y + i, m_Size.X + 1 - 2 * i, m_Size.Y + 1 - 2 * i, m_CornerRoundness, m_BorderColor);
+		
+			//render text
+			Renderer2D::SetTextAlign(SpikeTextAlign::CENTER, SpikeTextAlign::CENTER);
+			Renderer2D::RenderText(m_Text, m_Position.X + (float)m_Size.X * 0.5f, m_Position.Y + (float)m_Size.Y * 0.5f, m_ForegroundColor, true);
 		}
 	}
 }

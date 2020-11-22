@@ -10,7 +10,6 @@ namespace Spike {
 	{
 	public:
 		Sound(Mix_Chunk* chunk);
-		~Sound();
 
 		void Play(bool loop = false);
 		void Loop(int amount = -1);

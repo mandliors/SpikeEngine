@@ -287,6 +287,22 @@ namespace Spike {
 			SDL_FreeSurface(temp);
 		}
 	}
+	void Renderer2D::RenderText(const std::string& text, int x, int y, int r, int g, int b, int a, bool anti_aliasing)
+	{
+		if (s_Font != NULL)
+		{
+			SDL_Color color = { r, g, b, a };
+			SDL_Surface* temp = nullptr;
+			if (anti_aliasing)
+				temp = TTF_RenderText_Blended(s_Font, text.c_str(), color);
+			else if (s_TextRenderMode == SpikeTextRenderMode::ANTIALIASED)
+				temp = TTF_RenderText_Solid(s_Font, text.c_str(), color);
+			SDL_Texture* texture = SDL_CreateTextureFromSurface(s_Renderer, temp);
+			SDL_Rect rect = { x, y, temp->w, temp->h };
+			SDL_RenderCopy(s_Renderer, texture, NULL, &rect);
+			SDL_FreeSurface(temp);
+		}
+	}
 	void Renderer2D::RenderText(const std::string& text, int x, int y, const Color& color)
 	{
 		if (s_Font != NULL)
@@ -297,6 +313,22 @@ namespace Spike {
 				temp = TTF_RenderText_Solid(s_Font, text.c_str(), col);
 			else if (s_TextRenderMode == SpikeTextRenderMode::ANTIALIASED)
 				temp = TTF_RenderText_Blended(s_Font, text.c_str(), col);
+			SDL_Texture* texture = SDL_CreateTextureFromSurface(s_Renderer, temp);
+			SDL_Rect rect = { x + temp->w * s_HorizontalAlignmentMultiplier, y + temp->h * s_VerticalAlignmentMultiplier, temp->w, temp->h };
+			SDL_RenderCopy(s_Renderer, texture, NULL, &rect);
+			SDL_FreeSurface(temp);
+		}
+	}
+	void Renderer2D::RenderText(const std::string& text, int x, int y, const Color& color, bool anti_aliasing)
+	{
+		if (s_Font != NULL)
+		{
+			SDL_Color col = { color.R, color.G, color.B, color.A };
+			SDL_Surface* temp = nullptr;
+			if (anti_aliasing)
+				temp = TTF_RenderText_Blended(s_Font, text.c_str(), col);
+			else
+				temp = TTF_RenderText_Solid(s_Font, text.c_str(), col);
 			SDL_Texture* texture = SDL_CreateTextureFromSurface(s_Renderer, temp);
 			SDL_Rect rect = { x + temp->w * s_HorizontalAlignmentMultiplier, y + temp->h * s_VerticalAlignmentMultiplier, temp->w, temp->h };
 			SDL_RenderCopy(s_Renderer, texture, NULL, &rect);
@@ -319,6 +351,22 @@ namespace Spike {
 			SDL_FreeSurface(temp);
 		}
 	}
+	void Renderer2D::RenderRotatedText(const std::string& text, int x, int y, int angle, int r, int g, int b, int a, bool anti_aliasing)
+	{
+		if (s_Font != NULL)
+		{
+			SDL_Color color = { r, g, b, a };
+			SDL_Surface* temp = nullptr;
+			if (anti_aliasing)
+				temp = TTF_RenderText_Blended(s_Font, text.c_str(), color);
+			else
+				temp = TTF_RenderText_Solid(s_Font, text.c_str(), color);
+			SDL_Texture* texture = SDL_CreateTextureFromSurface(s_Renderer, temp);
+			SDL_Rect rect = { x + temp->w * s_HorizontalAlignmentMultiplier, y + temp->h * s_VerticalAlignmentMultiplier, temp->w, temp->h };
+			SDL_RenderCopyEx(s_Renderer, texture, NULL, &rect, angle, NULL, SDL_FLIP_NONE);
+			SDL_FreeSurface(temp);
+		}
+	}
 	void Renderer2D::RenderRotatedText(const std::string& text, int x, int y, int angle, const Color& color)
 	{
 		if (s_Font != NULL)
@@ -329,6 +377,22 @@ namespace Spike {
 				temp = TTF_RenderText_Solid(s_Font, text.c_str(), col);
 			else if (s_TextRenderMode == SpikeTextRenderMode::ANTIALIASED)
 				temp = TTF_RenderText_Blended(s_Font, text.c_str(), col);
+			SDL_Texture* texture = SDL_CreateTextureFromSurface(s_Renderer, temp);
+			SDL_Rect rect = { x + temp->w * s_HorizontalAlignmentMultiplier, y + temp->h * s_VerticalAlignmentMultiplier, temp->w, temp->h };
+			SDL_RenderCopyEx(s_Renderer, texture, NULL, &rect, angle, NULL, SDL_FLIP_NONE);
+			SDL_FreeSurface(temp);
+		}
+	}
+	void Renderer2D::RenderRotatedText(const std::string& text, int x, int y, int angle, const Color& color, bool anti_aliasing)
+	{
+		if (s_Font != NULL)
+		{
+			SDL_Color col = { color.R, color.G, color.B, color.A };
+			SDL_Surface* temp = nullptr;
+			if (anti_aliasing)
+				temp = TTF_RenderText_Blended(s_Font, text.c_str(), col);
+			else
+				temp = TTF_RenderText_Solid(s_Font, text.c_str(), col);
 			SDL_Texture* texture = SDL_CreateTextureFromSurface(s_Renderer, temp);
 			SDL_Rect rect = { x + temp->w * s_HorizontalAlignmentMultiplier, y + temp->h * s_VerticalAlignmentMultiplier, temp->w, temp->h };
 			SDL_RenderCopyEx(s_Renderer, texture, NULL, &rect, angle, NULL, SDL_FLIP_NONE);

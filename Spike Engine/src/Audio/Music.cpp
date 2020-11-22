@@ -7,10 +7,6 @@ namespace Spike {
 	{
 		m_Music = music;
 	}
-	Music::~Music()
-	{
-		//Mix_FreeMusic(m_Music);
-	}
 	void Music::Play(bool loop)
 	{
 		if (m_Music != nullptr)
@@ -48,7 +44,7 @@ namespace Spike {
 	{
 		if (m_Music)
 		{
-			m_Volume = (int)Math::Map(Math::Clamp(volume, 0, 128), 0, 128, 0, 100);
+			m_Volume = (int)Math::Map(Math::Clamp(volume, 0, 128), 0, 100, 0, 128);
 			if (!m_Muted)
 				Mix_VolumeMusic(m_Volume);
 		}

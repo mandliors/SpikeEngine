@@ -10,7 +10,6 @@ namespace Spike {
 	{
 	public:
 		Music(Mix_Music* music);
-		~Music();
 
 		void Play(bool loop = false);
 		void SafePlay(bool loop = false);

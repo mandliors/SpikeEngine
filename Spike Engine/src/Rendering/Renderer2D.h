@@ -72,9 +72,13 @@ namespace Spike
 		static void SetFontKerning(bool kerning);
 		static void SetTextRenderMode(SpikeTextRenderMode renderMode);
 		static void RenderText(const std::string& text, int x, int y, int r = 255, int g = 255, int b = 255, int a = 255);
+		static void RenderText(const std::string& text, int x, int y, int r, int g, int b, int a, bool anti_aliasing);
 		static void RenderText(const std::string& text, int x, int y, const Color& color);
+		static void RenderText(const std::string& text, int x, int y, const Color& color, bool anti_aliasing);
 		static void RenderRotatedText(const std::string& text, int x, int y, int angle, int r = 255, int g = 255, int b = 255, int a = 255);
+		static void RenderRotatedText(const std::string& text, int x, int y, int angle, int r, int g, int b, int a, bool anti_aliasing);
 		static void RenderRotatedText(const std::string& text, int x, int y, int angle, const Color& color);
+		static void RenderRotatedText(const std::string& text, int x, int y, int angle, const Color& color, bool anti_aliasing);
 		static void RenderTexture(SDL_Texture* texture, const Vector2& position, const Vector2& size, const Color& color = Color::White());
 		static void RenderRotatedTexture(SDL_Texture* texture, const Vector2& position, const Vector2& size, int angle, const Color& color = Color::White());
 
