@@ -2,9 +2,9 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-*.sln
-*.vcxproj
-*.vcxproj.filters
+**.sln
+**.vcxproj
+**.vcxproj.filters
 /.vs
 /Conway's Game of Life/x64
 /Conway's Game of Life
