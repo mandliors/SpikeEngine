@@ -20,6 +20,7 @@ workspace "Spike Engine"
 		files
 		{
 			"%{prj.name}/src/**.h",
+			"%{prj.name}/src/**.c",
 			"%{prj.name}/src/**.cpp"
 		}
 
@@ -31,7 +32,7 @@ workspace "Spike Engine"
 
 		filter "system:windows"
 			cppdialect "C++17"
-			staticruntime "On"
+			staticruntime "Off"
 			systemversion "latest"
 
 			-- postbuildcommands
@@ -60,6 +61,7 @@ workspace "Spike Engine"
 		files
 		{
 			"%{prj.name}/src/**.h",
+			"%{prj.name}/src/**.c",
 			"%{prj.name}/src/**.cpp"
 		}
 
@@ -88,7 +90,7 @@ workspace "Spike Engine"
 
 		filter "system:windows"
 			cppdialect "C++17"
-			staticruntime "On"
+			staticruntime "Off"
 			systemversion "latest"
 
 			defines
@@ -117,6 +119,7 @@ workspace "Spike Engine"
 		files
 		{
 			"%{prj.name}/src/**.h",
+			"%{prj.name}/src/**.c",
 			"%{prj.name}/src/**.cpp"
 		}
 
@@ -145,7 +148,7 @@ workspace "Spike Engine"
 
 		filter "system:windows"
 			cppdialect "C++17"
-			staticruntime "On"
+			staticruntime "Off"
 			systemversion "latest"
 
 			defines

@@ -1,21 +1,4 @@
-﻿  Main.cpp
-D:\Programming\C++\SDL2\Spike Engine\Spike Engine\src\UI\Constraints\DefaultConstraint.h(12,10): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-D:\Programming\C++\SDL2\Spike Engine\Spike Engine\src\UI\Constraints\DefaultConstraint.h(13,10): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-D:\Programming\C++\SDL2\Spike Engine\Spike Engine\src\UI\Constraints\DefaultConstraint.h(14,10): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-D:\Programming\C++\SDL2\Spike Engine\Spike Engine\src\UI\Constraints\DefaultConstraint.h(15,10): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-D:\Programming\C++\SDL2\Spike Engine\Spike Engine\src\UI\Constraints\MarginConstraint.h(12,10): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-D:\Programming\C++\SDL2\Spike Engine\Spike Engine\src\UI\Constraints\MarginConstraint.h(13,10): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-D:\Programming\C++\SDL2\Spike Engine\Spike Engine\src\UI\Constraints\MarginConstraint.h(14,10): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-D:\Programming\C++\SDL2\Spike Engine\Spike Engine\src\UI\Constraints\MarginConstraint.h(15,10): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-D:\Programming\C++\SDL2\Spike Engine\Spike Engine\src\Debug\Debug.h(19): warning C4091: 'static ': ignored on left of 'Spike::Debug::LOG_LEVEL' when no variable is declared
-D:\Programming\C++\SDL2\Spike Engine\Spike Engine\src\MessageBox\MessageBox.h(40,10): warning C4838: conversion from 'SDL_MessageBoxFlags' to 'Uint32' requires a narrowing conversion
-D:\Programming\C++\SDL2\Spike Engine\Spike Engine\src\ECS\Components.h(37,23): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-D:\Programming\C++\SDL2\Spike Engine\Spike Engine\src\ECS\Components.h(43,19): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\Programming\C++\SDL2\Spike Engine\Spike Engine\src\ECS\Components.h(47,30): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-D:\Programming\C++\SDL2\Spike Engine\Conway s Game of Life\src\Main.cpp(16,21): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-D:\Programming\C++\SDL2\Spike Engine\Conway s Game of Life\src\Main.cpp(115,101): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-D:\Programming\C++\SDL2\Spike Engine\Conway s Game of Life\src\Main.cpp(117,92): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-box2d.lib(b2_broad_phase.obj) : warning LNK4099: PDB 'box2d.pdb' was not found with 'box2d.lib(b2_broad_phase.obj)' or at 'D:\Programming\C++\SDL2\Spike Engine\x64\Debug\box2d.pdb'; linking object as if no debug info
+﻿box2d.lib(b2_broad_phase.obj) : warning LNK4099: PDB 'box2d.pdb' was not found with 'box2d.lib(b2_broad_phase.obj)' or at 'D:\Programming\C++\SDL2\Spike Engine\x64\Debug\box2d.pdb'; linking object as if no debug info
 box2d.lib(b2_chain_shape.obj) : warning LNK4099: PDB 'box2d.pdb' was not found with 'box2d.lib(b2_chain_shape.obj)' or at 'D:\Programming\C++\SDL2\Spike Engine\x64\Debug\box2d.pdb'; linking object as if no debug info
 box2d.lib(b2_collide_circle.obj) : warning LNK4099: PDB 'box2d.pdb' was not found with 'box2d.lib(b2_collide_circle.obj)' or at 'D:\Programming\C++\SDL2\Spike Engine\x64\Debug\box2d.pdb'; linking object as if no debug info
 box2d.lib(b2_collide_edge.obj) : warning LNK4099: PDB 'box2d.pdb' was not found with 'box2d.lib(b2_collide_edge.obj)' or at 'D:\Programming\C++\SDL2\Spike Engine\x64\Debug\box2d.pdb'; linking object as if no debug info
