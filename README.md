@@ -1,6 +1,6 @@
 # Spike Engine
 
-Spike engine is a 2D game engine (a framework yet) which provides you with a lot of features.
+Spike engine is a 2D game framework which provides you with a lot of features.
 
 ## Main features:
 - A fast and convenient 2D rendering API
