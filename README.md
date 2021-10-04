@@ -19,3 +19,7 @@ More details on Spike's trello page: https://trello.com/b/5dapH4Rk/spike-engine
 - Maybe in the future I will also implement 3D rendering
 
 Also, check out my webpage: http://progmaster.sytes.net/wp/
+
+## How to use
+Just download this repo as a zip and run the WindowsBuild.bat file. If you want to use a different IDE than vs2019, please check out how to use premake!  
+Also, copy the dlls from the dependencies folder into the executable's folder after bulding!
